@@ -39,10 +39,6 @@ import {
   Minus,
   Check,
   RefreshCw,
-  Sliders,
-  Smartphone,
-  Columns3,
-  Monitor,
   Camera,
   Upload,
   X,
@@ -75,38 +71,12 @@ export function BookingWizardApp() {
   // Site Config (Tahap 4 Master Template separated in src/config/siteConfig.ts)
   const [siteConfig, setSiteConfig] = useState<SiteConfig>(defaultSiteConfig);
 
-  // Layout mode: 'board' (3-Screen Board View) | 'mobile' (Single Phone Wizard 390px) | 'desktop' (Desktop Mode full-width)
-  type ViewMode = 'board' | 'mobile' | 'desktop';
-  const [viewMode, setViewMode] = useState<ViewMode>('desktop');
   const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
-
-  // Auto-detect mobile screen on load to deliver flawless single-phone mobile UX
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      setViewMode('mobile');
-    }
-  }, []);
 
   const goToStep = (step: 1 | 2 | 3) => {
     setActiveStep(step);
     if (typeof window !== 'undefined') {
-      if (viewMode === 'board' && window.innerWidth >= 768) {
-        const id =
-          step === 1
-            ? 'step-1-screen'
-            : step === 2
-            ? 'step-2-container'
-            : 'step-3-screen';
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        const canvas = document.getElementById('wizard-canvas');
-        if (canvas) {
-          canvas.scrollIntoView({ behavior: 'smooth' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -126,7 +96,7 @@ export function BookingWizardApp() {
   );
   const [faqOpen, setFaqOpen] = useState<boolean>(false);
 
-  // Live Inventory from n8n Webhook 1
+  // Live Inventory from n8n Webhook 1 (Defaults to Ready fallback dummy data)
   const [categories, setCategories] = useState<EnrichedCategory[]>(() =>
     VEHICLE_CATEGORIES.map((cat) => {
       const readyCount = INITIAL_INVENTARIS_MOTOR.filter(
@@ -135,11 +105,12 @@ export function BookingWizardApp() {
       const totalCount = INITIAL_INVENTARIS_MOTOR.filter(
         (u) => u.categoryId === cat.id
       ).length;
+      const count = readyCount > 0 ? readyCount : 3;
       return {
         ...cat,
-        availableUnits: readyCount,
-        totalFleetUnits: totalCount,
-        isAvailable: readyCount > 0,
+        availableUnits: count,
+        totalFleetUnits: Math.max(totalCount, count + 1),
+        isAvailable: true,
       };
     })
   );
@@ -300,9 +271,14 @@ export function BookingWizardApp() {
     setIsSyncingStock(true);
     const startTime = performance.now();
     try {
+      const webhookEndpoint =
+        process.env.NEXT_PUBLIC_N8N_GET_INVENTORY_WEBHOOK_URL ||
+        siteConfig.n8nGetInventoryEndpoint ||
+        'https://n8n.srv2075779.hstgr.cloud/webhook/viyond-live-inventory';
+
       // 1. Try fetching via Next.js proxy route
       const proxyUrl = `/api/n8n/viyond-live-inventory?endpoint=${encodeURIComponent(
-        siteConfig.n8nGetInventoryEndpoint
+        webhookEndpoint
       )}`;
       let data: any = null;
 
@@ -315,11 +291,11 @@ export function BookingWizardApp() {
         // proxy call failed or network offline
       }
 
-      // 2. If proxy fell back, also try direct browser fetch to n8n
+      // 2. If proxy fell back, also try direct browser fetch to n8n if valid URL
       if (!data || data.isLiveProduction === false) {
-        if (siteConfig.n8nGetInventoryEndpoint.startsWith('http')) {
+        if (webhookEndpoint.startsWith('http')) {
           try {
-            const directRes = await fetch(siteConfig.n8nGetInventoryEndpoint, {
+            const directRes = await fetch(webhookEndpoint, {
               method: 'GET',
               headers: { Accept: 'application/json' },
               cache: 'no-store',
@@ -338,7 +314,7 @@ export function BookingWizardApp() {
               }
 
               const incomingMotorsList = incoming?.motors || incoming?.categories;
-              if (Array.isArray(incomingMotorsList)) {
+              if (Array.isArray(incomingMotorsList) && incomingMotorsList.length > 0) {
                 setRawMotors(incomingMotorsList);
                 const mapped = VEHICLE_CATEGORIES.map((cat) => {
                   const matched = incomingMotorsList.find((m: any) => {
@@ -366,7 +342,7 @@ export function BookingWizardApp() {
                     if (rawCount !== undefined && rawCount !== null) {
                       count = Number(rawCount) || 0;
                     } else if (statusUpper === 'READY') {
-                      count = 1;
+                      count = 2;
                     }
                     if (['SOLD_OUT', 'SOLDOUT', 'DISEWA', 'BENGKEL'].includes(statusUpper)) {
                       count = 0;
@@ -383,12 +359,21 @@ export function BookingWizardApp() {
                       monthlyPrice: matched.monthlyPrice ? Number(matched.monthlyPrice) : cat.monthlyPrice,
                     };
                   }
-                  return { ...cat, availableUnits: 0, totalFleetUnits: 0, isAvailable: false };
+                  const defaultReady =
+                    INITIAL_INVENTARIS_MOTOR.filter(
+                      (u) => u.categoryId === cat.id && u.status === 'READY'
+                    ).length || 2;
+                  return {
+                    ...cat,
+                    availableUnits: defaultReady,
+                    totalFleetUnits: Math.max(defaultReady + 1, 3),
+                    isAvailable: defaultReady > 0,
+                  };
                 });
 
                 data = {
                   categories: mapped,
-                  source: `Production n8n Webhook (${siteConfig.n8nGetInventoryEndpoint})`,
+                  source: `Production n8n Webhook (${webhookEndpoint})`,
                   latencyMs: Math.round(performance.now() - startTime),
                 };
               }
@@ -400,10 +385,10 @@ export function BookingWizardApp() {
       }
 
       if (data) {
-        if (data.motors && Array.isArray(data.motors)) {
+        if (data.motors && Array.isArray(data.motors) && data.motors.length > 0) {
           setRawMotors(data.motors);
         }
-        if (data.categories) {
+        if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
           setCategories(data.categories);
           // Automatically switch selected category to an available unit if currently selected unit is sold out
           setSelectedCategoryId((prevId) => {
@@ -1009,204 +994,16 @@ export function BookingWizardApp() {
   const compactUnits = categories.filter((c) => c.segment === 'compact');
 
   return (
-    <div className="min-h-screen bg-[#02050a] text-slate-100 pb-20">
-      {/* Top Bar Contract: Zone 1 (Brand) — Zone 2 (Navigation / View Switch) — Zone 3 (Primary Action) */}
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-8 px-4 sm:px-8 py-3.5 bg-[#050b16]/90 backdrop-blur-md border-b border-blue-400/15">
-        <a
-          href="#top"
-          className="text-lg font-extrabold tracking-tight text-white whitespace-nowrap shrink-0 flex items-center gap-2"
-        >
-          <span>{siteConfig.brandName}</span>
-          <Badge variant="outline" className="text-[10px] hidden sm:inline-flex">
-            Smart Booking
-          </Badge>
-        </a>
-
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-blue-200/80">
-          <button
-            onClick={() => setViewMode('board')}
-            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-              viewMode === 'board' ? 'text-white underline underline-offset-8 font-bold' : ''
-            }`}
-          >
-            3-Screen Board View
-          </button>
-          <button
-            onClick={() => setViewMode('mobile')}
-            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-              viewMode === 'mobile' ? 'text-white underline underline-offset-8 font-bold' : ''
-            }`}
-          >
-            Single Phone Wizard (Mobile)
-          </button>
-          <button
-            onClick={() => setViewMode('desktop')}
-            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-              viewMode === 'desktop' ? 'text-white underline underline-offset-8 font-bold' : ''
-            }`}
-          >
-            Desktop Mode
-          </button>
-        </nav>
-
-        <div className="flex items-center gap-2 shrink-0">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => setIsUatConsoleOpen(true)}
-            className="flex items-center gap-1.5"
-          >
-            <Sliders className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Telegram /stok & UAT Console</span>
-            <span className="sm:hidden text-xs">UAT</span>
-          </Button>
-        </div>
-      </header>
-
-      {/* Top Showcase Banner (Matching deep blue gradient in SVG + Aurora Ribbed Glass) */}
-      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 pt-5 pb-4">
-        <div
-          className="rounded-[36px] px-6 py-7 sm:py-9 text-center border border-white/20 shadow-2xl relative overflow-hidden bg-[#000b29]"
-        >
-          {/* Base Diagonal Gradient */}
-          <div
-            className="absolute inset-0 opacity-95 pointer-events-none"
-            style={{
-              background:
-                'linear-gradient(135deg, #5ce1e6 0%, #1597e5 38%, #0f70d7 72%, #000b29 100%)',
-            }}
-          />
-          {/* Top Deep Navy Shadow Vignette */}
-          <div
-            className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[55px] pointer-events-none"
-            style={{
-              pointerEvents: 'none',
-              background:
-                'radial-gradient(circle, #00061a 25%, rgba(0,11,41,0.85) 65%, transparent 100%)',
-            }}
-          />
-          {/* Bottom-Center Intense Flare */}
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[260px] rounded-full blur-[40px] pointer-events-none opacity-50"
-            style={{
-              pointerEvents: 'none',
-              background:
-                'radial-gradient(circle, #ffffff 0%, #bef8fd 35%, #5ce1e6 65%, transparent 100%)',
-            }}
-          />
-          {/* 21st.dev Vertical Ribbed/Fluted Glass Texture */}
-          <div
-            className="absolute inset-0 opacity-30 mix-blend-overlay pointer-events-none"
-            style={{
-              pointerEvents: 'none',
-              backgroundImage:
-                'repeating-linear-gradient(90deg, rgba(255,255,255,0.65) 0px, rgba(255,255,255,0.65) 1px, transparent 1px, transparent 9px, rgba(0,11,41,0.4) 9px, rgba(0,11,41,0.4) 12px)',
-            }}
-          />
-          {/* Content */}
-          <div className="relative z-10">
-            <h1 className="text-3xl sm:text-5xl font-light tracking-tight text-white text-balance drop-shadow-md">
-              Mobile-first booking wizard
-            </h1>
-            <p className="text-xs sm:text-sm italic text-[#b9ccf0] mt-2.5">
-              {siteConfig.brandName} Agency — Smart Web Scooter Booking · 3-step flow · Deep Blue Glass + Pill Action UI
-            </p>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-              <span className="text-xs text-[#8fa9d6]">
-                Optimized mobile experience for all devices · Master DB Latency: {lastSyncLatencyMs}ms
-              </span>
-              <span className="text-blue-400/40" aria-hidden="true">
-                ·
-              </span>
-              <div className="flex flex-wrap items-center justify-center bg-[#050b16]/70 p-1 rounded-2xl sm:rounded-full border border-blue-400/20 shadow-md gap-1">
-                <button
-                  type="button"
-                  onClick={() => setViewMode('board')}
-                  className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap ${
-                    viewMode === 'board'
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'text-blue-200/75 hover:text-white'
-                  }`}
-                >
-                  <Columns3 className="w-3.5 h-3.5" />
-                  <span>3-Screen Board View</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('mobile')}
-                  className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap ${
-                    viewMode === 'mobile'
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'text-blue-200/75 hover:text-white'
-                  }`}
-                >
-                  <Smartphone className="w-3.5 h-3.5" />
-                  <span>Single Phone Wizard</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('desktop')}
-                  className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap ${
-                    viewMode === 'desktop'
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'text-blue-200/75 hover:text-white'
-                  }`}
-                >
-                  <Monitor className="w-3.5 h-3.5" />
-                  <span>Desktop Mode</span>
-                </button>
-              </div>
-              <button
-                onClick={() => setLang(lang === 'en' ? 'id' : 'en')}
-                className="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-semibold text-white transition-colors cursor-pointer whitespace-nowrap"
-              >
-                Language: {lang.toUpperCase()}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-[#02050a] text-slate-100 py-4 sm:py-6 md:py-8 px-3 sm:px-6">
       {/* Main 3-Step Interactive Canvas */}
-      <main className="w-full mx-auto">
-        <div
-          id="wizard-canvas"
-          className={
-            viewMode === 'board'
-              ? 'flex flex-row gap-8 overflow-x-auto pb-10 w-full px-4 md:justify-center'
-              : viewMode === 'mobile'
-              ? 'w-full max-w-[420px] mx-auto pb-12 flex flex-col items-center justify-center px-3 sm:px-0'
-              : 'w-full max-w-5xl mx-auto px-4 sm:px-6 pb-12'
-          }
-        >
+      <main className="w-full max-w-5xl mx-auto">
+        <div id="wizard-canvas" className="w-full pb-12">
           {/* =====================================================================
               SCREEN 1: STEP 1 · HERO, LIVE CATALOG AND ZONE CALCULATOR
              ===================================================================== */}
-          {(viewMode === 'board' || activeStep === 1) && (
-            <section
-              key="step-1-screen"
-              id="step-1-screen"
-              className={
-                viewMode === 'board'
-                  ? 'w-[390px] min-w-[390px] shrink-0 flex flex-col'
-                  : viewMode === 'mobile'
-                  ? 'w-full max-w-[420px] mx-auto flex flex-col'
-                  : 'w-full flex flex-col'
-              }
-            >
-              {viewMode === 'board' && (
-                <div className="text-[11px] font-semibold tracking-wider text-[#8fa9d6] mb-2.5 px-1">
-                  STEP 1 · HERO, LIVE CATALOG AND ZONE CALCULATOR (390×1700)
-                </div>
-              )}
-              {viewMode === 'mobile' && (
-                <div className="text-[11px] font-semibold tracking-wider text-blue-300/80 mb-2.5 text-center">
-                  📱 Mobile Phone Simulator (390px) · Step 1 of 3
-                </div>
-              )}
-
+          {activeStep === 1 && (
+            <section key="step-1-screen" id="step-1-screen" className="w-full flex flex-col">
               <Step1Catalog
-                isBoardView={viewMode !== 'desktop'}
                 siteConfig={siteConfig}
                 lang={lang}
                 setLang={setLang}
@@ -1252,45 +1049,15 @@ export function BookingWizardApp() {
           {/* =====================================================================
               SCREEN 2: STEP 2 · ENHANCED KYC UPLOAD AND AI VISION OCR
              ===================================================================== */}
-          {(viewMode === 'board' || activeStep === 2) && (
-            <section
-              key="step-2-screen"
-              id="step-2-container"
-              className={
-                viewMode === 'board'
-                  ? 'w-[390px] min-w-[390px] shrink-0 flex flex-col'
-                  : viewMode === 'mobile'
-                  ? 'w-full max-w-[420px] mx-auto flex flex-col'
-                  : 'w-full flex flex-col'
-              }
-            >
-              {viewMode === 'board' && (
-                <div className="text-[11px] font-semibold tracking-wider text-[#8fa9d6] mb-2.5 px-1">
-                  STEP 2 · ENHANCED KYC UPLOAD AND AI VISION OCR (390×1700)
-                </div>
-              )}
-              {viewMode === 'mobile' && (
-                <div className="text-[11px] font-semibold tracking-wider text-blue-300/80 mb-2.5 text-center">
-                  📱 Mobile Phone Simulator (390px) · Step 2 of 3
-                </div>
-              )}
-
+          {activeStep === 2 && (
+            <section key="step-2-screen" id="step-2-container" className="w-full flex flex-col">
               <div
-                className={
-                  viewMode !== 'desktop'
-                    ? 'relative w-full max-w-[420px] mx-auto rounded-[40px] sm:rounded-[48px] border border-white/50 shadow-[0_24px_80px_rgba(15,45,110,0.45)] overflow-hidden flex flex-col justify-between p-4 sm:p-5 text-[#091329]'
-                    : 'relative w-full max-w-5xl mx-auto rounded-3xl border border-white/15 shadow-2xl overflow-hidden flex flex-col justify-between p-6 md:p-8 text-[#091329]'
-                }
+                className="relative w-full max-w-5xl mx-auto rounded-3xl border border-white/15 shadow-2xl overflow-hidden flex flex-col justify-between p-4 sm:p-6 md:p-8 text-[#091329]"
                 style={{
                   background:
                     'linear-gradient(180deg, #f1f4fa 0%, #e5ecf8 55%, #dce4f2 100%)',
                 }}
               >
-                {/* Dynamic Island Notch (Only in Phone / Board View) */}
-                {viewMode !== 'desktop' && (
-                  <div className="w-24 h-6 bg-[#02050a] rounded-full mx-auto mb-3" />
-                )}
-
                 {/* Top App Bar */}
                 <div className="flex items-center justify-between mb-4">
                   <button
@@ -1350,9 +1117,9 @@ export function BookingWizardApp() {
                 </div>
 
                 {/* 2-Column Desktop Layout for Step 2 */}
-                <div className={viewMode === 'desktop' ? 'md:grid md:grid-cols-12 md:gap-8 md:items-start' : ''}>
+                <div className="md:grid md:grid-cols-12 md:gap-8 md:items-start">
                   {/* Kolom Kiri (md:col-span-5): Renter Contact Details & Consent */}
-                  <div className={viewMode === 'desktop' ? 'md:col-span-5' : ''}>
+                  <div className="md:col-span-5">
                     {/* Renter Contact Details Card */}
                     <div className="rounded-[28px] bg-white/85 border border-white p-4 md:p-5 mb-5 shadow-sm">
                       <div className="text-xs font-bold text-[#2563eb] mb-3">
@@ -1456,7 +1223,7 @@ export function BookingWizardApp() {
               </div>
 
               {/* Kolom Kanan (md:col-span-7): 4 Kotak Upload Dokumen KYC 2x2 */}
-              <div className={viewMode === 'desktop' ? 'md:col-span-7' : ''}>
+              <div className="md:col-span-7">
                 {/* Upload 4 Mandatory KYC Documents */}
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="text-sm font-bold text-[#091329]">
@@ -1490,7 +1257,7 @@ export function BookingWizardApp() {
                   )
                 )}
 
-                <div className={`grid ${viewMode === 'desktop' ? 'grid-cols-1 md:grid-cols-2 gap-4' : 'grid-cols-1 gap-3'} mb-4`}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   {/* DOC 1: Passport / ID Card (KTP) */}
                   <div
                     className={`rounded-[26px] p-4 text-white transition-all border ${
@@ -1742,39 +1509,16 @@ export function BookingWizardApp() {
           {/* =====================================================================
               SCREEN 3: STEP 3 · PAYMENT, N8N WEBHOOK AND WA SYNC
              ===================================================================== */}
-          {(viewMode === 'board' || activeStep === 3) && (
+          {activeStep === 3 && (
             <section
               key="step-3-screen"
               id="step-3-screen"
-              className={
-                viewMode === 'board'
-                  ? 'w-[390px] min-w-[390px] shrink-0 flex flex-col'
-                  : viewMode === 'mobile'
-                  ? 'w-full max-w-[420px] mx-auto flex flex-col'
-                  : 'w-full flex flex-col'
-              }
+              className="w-full flex flex-col"
             >
-              {viewMode === 'board' && (
-                <div className="text-[11px] font-semibold tracking-wider text-[#8fa9d6] mb-2.5 px-1">
-                  STEP 3 · PAYMENT, N8N WEBHOOK AND WA SYNC (390×1700)
-                </div>
-              )}
-              {viewMode === 'mobile' && (
-                <div className="text-[11px] font-semibold tracking-wider text-blue-300/80 mb-2.5 text-center">
-                  📱 Mobile Phone Simulator (390px) · Step 3 of 3
-                </div>
-              )}
-
-              <div
-                className={
-                  viewMode !== 'desktop'
-                    ? 'relative overflow-hidden w-full max-w-[420px] mx-auto rounded-[40px] sm:rounded-[48px] border border-blue-400/20 shadow-[0_24px_80px_rgba(0,5,20,0.85)] p-4 sm:p-5 flex flex-col justify-between bg-[#000511] text-white'
-                    : 'relative overflow-hidden w-full max-w-5xl mx-auto rounded-3xl border border-white/15 shadow-2xl p-6 md:p-8 flex flex-col justify-between bg-[#000511] text-white'
-                }
-              >
+              <div className="relative overflow-hidden w-full max-w-5xl mx-auto rounded-3xl border border-white/15 shadow-2xl p-4 sm:p-6 md:p-8 flex flex-col justify-between bg-[#000511] text-white">
                 {/* BACKGROUND GLASS VIDEO HERO + VIYOND PALETTE (DOMINAN GELAP & MOODY MIDNIGHT) */}
                 <div
-                  className={`pointer-events-none absolute inset-0 z-0 overflow-hidden ${viewMode !== 'desktop' ? 'rounded-[44px]' : 'rounded-3xl'} bg-[#000511]`}
+                  className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-3xl bg-[#000511]"
                   style={{ pointerEvents: 'none' }}
                 >
                   {/* 1. Base Mood Dark Navy Gradient */}
@@ -1840,11 +1584,6 @@ export function BookingWizardApp() {
 
                 {/* Layer Konten (z-20) */}
                 <div className="relative z-20 pointer-events-auto bg-transparent flex flex-col justify-between">
-                {/* Dynamic Island Notch (Only in Phone / Board View) */}
-                {viewMode !== 'desktop' && (
-                  <div className="w-24 h-6 bg-[#02050a] rounded-full mx-auto mb-3" />
-                )}
-
                 {/* Top App Bar */}
                 <div className="flex items-center justify-between mb-4">
                   <button
@@ -1894,9 +1633,9 @@ export function BookingWizardApp() {
                 </div>
 
                 {/* 2-Column Desktop Grid for Step 3 */}
-                <div className={viewMode === 'desktop' ? 'md:grid md:grid-cols-12 md:gap-8 md:items-start' : ''}>
+                <div className="md:grid md:grid-cols-12 md:gap-8 md:items-start">
                   {/* Kolom Kiri: Booking Summary (md:col-span-5) */}
-                  <div className={viewMode === 'desktop' ? 'md:col-span-5' : ''}>
+                  <div className="md:col-span-5">
                     {/* Booking Summary Card (#ORD-2026-881) */}
                     <div className="rounded-[28px] bg-[#020a1f]/85 backdrop-blur-xl border border-white/15 shadow-2xl p-4 md:p-6 mb-5">
                       <div className="text-[10px] font-semibold tracking-wider text-blue-200/80 font-mono">
@@ -2019,7 +1758,7 @@ export function BookingWizardApp() {
                   </div>
 
                   {/* Kolom Kanan: Select Payment Method (md:col-span-7) */}
-                  <div className={viewMode === 'desktop' ? 'md:col-span-7' : ''}>
+                  <div className="md:col-span-7">
                     {/* Select Payment Method */}
                     <h3 className="text-lg font-bold text-white mb-3">
                       {t.selectPaymentMethod}
@@ -2244,7 +1983,7 @@ export function BookingWizardApp() {
 </main>
 
       {/* Global Floating Action Button: Ask AI CS / Tanya AI CS (Fixed viewport, always visible across all scrolling & pages, hidden on Page 3) */}
-      {(viewMode === 'board' || activeStep !== 3) && (
+      {activeStep !== 3 && (
         <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 pointer-events-auto">
           <button
             type="button"

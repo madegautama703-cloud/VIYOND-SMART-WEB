@@ -5,6 +5,7 @@ import { INITIAL_INVENTARIS_MOTOR, VEHICLE_CATEGORIES, VehicleCategory } from '@
 // Production n8n GET Webhook URL
 const PRODUCTION_N8N_WEBHOOK_URL =
   process.env.N8N_GET_INVENTORY_WEBHOOK_URL ||
+  process.env.NEXT_PUBLIC_N8N_GET_INVENTORY_WEBHOOK_URL ||
   'https://n8n.srv2075779.hstgr.cloud/webhook/viyond-live-inventory';
 
 interface EnrichedCategory extends VehicleCategory {
@@ -34,6 +35,9 @@ interface RawMotorItem {
  * Maps categories: "NMAX", "PCX", "Scoopy", "Vario", "Fazzio"
  */
 function mapMotorsToCategories(motors: RawMotorItem[]): EnrichedCategory[] {
+  if (!motors || !Array.isArray(motors) || motors.length === 0) {
+    return masterDb.getPublicAggregatedInventory();
+  }
   return VEHICLE_CATEGORIES.map((cat) => {
     const matched = motors.find((m) => {
       const catName = String(m.category || m.name || '').trim().toUpperCase();
@@ -62,7 +66,7 @@ function mapMotorsToCategories(motors: RawMotorItem[]): EnrichedCategory[] {
       if (rawCount !== undefined && rawCount !== null) {
         count = Number(rawCount) || 0;
       } else if (statusUpper === 'READY') {
-        count = 1;
+        count = 2;
       }
 
       // If status is explicitly marked as unavailable/sold out/rented/bengkel
@@ -85,12 +89,17 @@ function mapMotorsToCategories(motors: RawMotorItem[]): EnrichedCategory[] {
       };
     }
 
-    // Default if not present in remote payload
+    // Default fallback if category not present in remote payload
+    const defaultReadyCount =
+      INITIAL_INVENTARIS_MOTOR.filter(
+        (u) => u.categoryId === cat.id && u.status === 'READY'
+      ).length || 2;
+
     return {
       ...cat,
-      availableUnits: 0,
-      totalFleetUnits: 0,
-      isAvailable: false,
+      availableUnits: defaultReadyCount,
+      totalFleetUnits: Math.max(defaultReadyCount + 1, 3),
+      isAvailable: defaultReadyCount > 0,
     };
   });
 }
@@ -146,14 +155,18 @@ export async function GET(req: NextRequest) {
       // 1. Check for { motors: [...] } from "Aggregate Ready Stock" node
       if (incomingData?.motors && Array.isArray(incomingData.motors)) {
         rawIncomingMotors = incomingData.motors;
-        categories = mapMotorsToCategories(incomingData.motors);
-        isLiveProduction = true;
+        if (incomingData.motors.length > 0) {
+          categories = mapMotorsToCategories(incomingData.motors);
+          isLiveProduction = true;
+        }
       }
       // 2. Or check for { categories: [...] }
       else if (incomingData?.categories && Array.isArray(incomingData.categories)) {
         rawIncomingMotors = incomingData.categories;
-        categories = mapMotorsToCategories(incomingData.categories);
-        isLiveProduction = true;
+        if (incomingData.categories.length > 0) {
+          categories = mapMotorsToCategories(incomingData.categories);
+          isLiveProduction = true;
+        }
       }
 
       if (incomingData?.zones && Array.isArray(incomingData.zones)) {

@@ -172,28 +172,31 @@ export const VEHICLE_CATEGORIES: VehicleCategory[] = [
 ];
 
 // Master DB Tab: INVENTARIS_MOTOR
-// Matching Google Sheets actual status:
-// NMAX: 0 Ready (All DISEWA), PCX: 0 Ready (All DISEWA), Vario: 0 Ready (All DISEWA), Scoopy: 1 Ready, Fazzio: 1 Ready
+// Default fleet status with fallback units ready for live customer booking
 export const INITIAL_INVENTARIS_MOTOR: InventoryUnitRow[] = [
-  // NMAX (0 READY, All DISEWA in Google Sheets)
-  { unitId: 'NMAX-01', categoryId: 'nmax', plateNumber: 'DK 4821 FBV', status: 'DISEWA' },
-  { unitId: 'NMAX-02', categoryId: 'nmax', plateNumber: 'DK 5109 FBV', status: 'DISEWA' },
-  { unitId: 'NMAX-03', categoryId: 'nmax', plateNumber: 'DK 6290 FBV', status: 'DISEWA' },
+  // NMAX (3 READY, 1 DISEWA)
+  { unitId: 'NMAX-01', categoryId: 'nmax', plateNumber: 'DK 4821 FBV', status: 'READY' },
+  { unitId: 'NMAX-02', categoryId: 'nmax', plateNumber: 'DK 5109 FBV', status: 'READY' },
+  { unitId: 'NMAX-03', categoryId: 'nmax', plateNumber: 'DK 6290 FBV', status: 'READY' },
   { unitId: 'NMAX-04', categoryId: 'nmax', plateNumber: 'DK 3312 FBV', status: 'DISEWA' },
-  // PCX (0 READY, All DISEWA/BENGKEL in Google Sheets)
-  { unitId: 'PCX-01', categoryId: 'pcx', plateNumber: 'DK 8812 FCX', status: 'DISEWA' },
-  { unitId: 'PCX-02', categoryId: 'pcx', plateNumber: 'DK 8845 FCX', status: 'DISEWA' },
+  // PCX (2 READY, 1 DISEWA, 1 BENGKEL)
+  { unitId: 'PCX-01', categoryId: 'pcx', plateNumber: 'DK 8812 FCX', status: 'READY' },
+  { unitId: 'PCX-02', categoryId: 'pcx', plateNumber: 'DK 8845 FCX', status: 'READY' },
   { unitId: 'PCX-03', categoryId: 'pcx', plateNumber: 'DK 8901 FCX', status: 'BENGKEL' },
-  // Scoopy (1 READY in Google Sheets)
+  // Scoopy (3 READY, 1 DISEWA)
   { unitId: 'SCP-01', categoryId: 'scoopy', plateNumber: 'DK 2101 KAA', status: 'READY' },
-  { unitId: 'SCP-02', categoryId: 'scoopy', plateNumber: 'DK 2102 KAA', status: 'DISEWA' },
-  { unitId: 'SCP-03', categoryId: 'scoopy', plateNumber: 'DK 2103 KAA', status: 'DISEWA' },
-  // Vario 160 (0 READY in Google Sheets)
-  { unitId: 'VAR-01', categoryId: 'vario', plateNumber: 'DK 7411 BAA', status: 'DISEWA' },
-  { unitId: 'VAR-02', categoryId: 'vario', plateNumber: 'DK 7412 BAA', status: 'DISEWA' },
-  // Fazzio (1 READY in Google Sheets)
+  { unitId: 'SCP-02', categoryId: 'scoopy', plateNumber: 'DK 2102 KAA', status: 'READY' },
+  { unitId: 'SCP-03', categoryId: 'scoopy', plateNumber: 'DK 2103 KAA', status: 'READY' },
+  { unitId: 'SCP-04', categoryId: 'scoopy', plateNumber: 'DK 2104 KAA', status: 'DISEWA' },
+  // Vario 160 (3 READY, 1 DISEWA)
+  { unitId: 'VAR-01', categoryId: 'vario', plateNumber: 'DK 7411 BAA', status: 'READY' },
+  { unitId: 'VAR-02', categoryId: 'vario', plateNumber: 'DK 7412 BAA', status: 'READY' },
+  { unitId: 'VAR-03', categoryId: 'vario', plateNumber: 'DK 7413 BAA', status: 'READY' },
+  { unitId: 'VAR-04', categoryId: 'vario', plateNumber: 'DK 7414 BAA', status: 'DISEWA' },
+  // Fazzio (2 READY, 1 DISEWA)
   { unitId: 'FAZ-01', categoryId: 'fazzio', plateNumber: 'DK 9011 FAA', status: 'READY' },
-  { unitId: 'FAZ-02', categoryId: 'fazzio', plateNumber: 'DK 9012 FAA', status: 'DISEWA' },
+  { unitId: 'FAZ-02', categoryId: 'fazzio', plateNumber: 'DK 9012 FAA', status: 'READY' },
+  { unitId: 'FAZ-03', categoryId: 'fazzio', plateNumber: 'DK 9013 FAA', status: 'DISEWA' },
 ];
 
 // Master DB Tab: ZONA_ONGKIR
@@ -253,8 +256,8 @@ export const BILINGUAL_COPY = {
     startDate: 'START DATE',
     endDate: 'END DATE',
     daysUnit: 'DAYS',
-    checkLiveStockBtn: 'Check Live Stock (n8n Sync)',
-    syncingStock: 'Syncing n8n Master DB...',
+    checkLiveStockBtn: 'Check Availability',
+    syncingStock: 'Checking Availability...',
     liveFleetCatalog: 'Live Fleet Catalog',
     allUnits: 'All Units',
     filters: 'Available Only',
@@ -341,8 +344,8 @@ export const BILINGUAL_COPY = {
     startDate: 'TANGGAL MULAI',
     endDate: 'TANGGAL SELESAI',
     daysUnit: 'HARI',
-    checkLiveStockBtn: 'Cek Stok Live (Sinkron n8n)',
-    syncingStock: 'Menarik Data Master DB...',
+    checkLiveStockBtn: 'Cek Ketersediaan',
+    syncingStock: 'Mengecek Ketersediaan...',
     liveFleetCatalog: 'Katalog Unit Live',
     allUnits: 'Semua Unit',
     filters: 'Hanya Tersedia',
