@@ -23,6 +23,7 @@ import {
 import { formatIdr } from '@/lib/priceCalculator';
 
 export interface Step1CatalogProps {
+  isShowcaseMode?: boolean;
   isBoardView?: boolean;
   siteConfig?: SiteConfig;
   lang?: 'en' | 'id';
@@ -68,6 +69,7 @@ export interface Step1CatalogProps {
 }
 
 export const Step1Catalog: React.FC<Step1CatalogProps> = ({
+  isShowcaseMode,
   isBoardView = false,
   siteConfig = defaultSiteConfig,
   lang = 'en',
@@ -112,12 +114,24 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
   setIsWaModalOpen,
 }) => {
   const t = BILINGUAL_COPY[lang] || BILINGUAL_COPY.en;
+  const isShowcase =
+    isShowcaseMode !== undefined
+      ? isShowcaseMode
+      : siteConfig?.isShowcaseMode ?? true;
 
   return (
-    <div className="relative overflow-hidden w-full max-w-5xl mx-auto rounded-3xl border border-white/15 shadow-2xl p-4 sm:p-6 md:p-8 flex flex-col justify-between bg-[#000b29]">
+    <div
+      className={`relative overflow-hidden w-full ${
+        isShowcase && isBoardView
+          ? 'w-full max-w-[420px] mx-auto rounded-[40px] sm:rounded-[48px] border border-blue-300/25 shadow-[0_24px_80px_rgba(15,45,110,0.55)] p-4 sm:p-5'
+          : 'w-full max-w-5xl mx-auto rounded-3xl border border-white/15 shadow-2xl p-4 sm:p-6 md:p-8'
+      } flex flex-col justify-between bg-[#000b29]`}
+    >
       {/* BACKGROUND GLASS VIDEO HERO + VIYOND PALETTE (FULL HEIGHT CANVAS WITH BREATHING ANIMATION) */}
       <div
-        className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-3xl bg-[#000b29]"
+        className={`pointer-events-none absolute inset-0 z-0 overflow-hidden ${
+          isShowcase && isBoardView ? 'rounded-[44px]' : 'rounded-3xl'
+        } bg-[#000b29]`}
         style={{ pointerEvents: 'none' }}
       >
         {/* Video Background from 21st.dev playing in loop */}
@@ -213,6 +227,11 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
 
       {/* Layer Konten (z-20) */}
       <div className="relative z-20 pointer-events-auto bg-transparent flex flex-col justify-between">
+        {/* Dynamic Island Notch (Only in Phone / Board View when in Showcase Mode) */}
+        {isShowcase && isBoardView && (
+          <div className="w-24 h-6 bg-[#02050a] rounded-full mx-auto mb-3 opacity-90" />
+        )}
+
         {/* Top App Bar */}
         <div className="flex items-center justify-between mb-5">
           <span className="text-lg font-black tracking-tighter text-white">
@@ -225,18 +244,20 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
             >
               EN / ID
             </button>
-            <button
-              onClick={() => setIsUatConsoleOpen && setIsUatConsoleOpen(true)}
-              className="w-9 h-9 rounded-full bg-white text-[#071430] hover:bg-blue-50 flex items-center justify-center transition-colors cursor-pointer shadow"
-              aria-label="Open UAT & Master DB Menu"
-            >
-              <Menu className="w-4 h-4" />
-            </button>
+            {isShowcase && (
+              <button
+                onClick={() => setIsUatConsoleOpen && setIsUatConsoleOpen(true)}
+                className="w-9 h-9 rounded-full bg-white text-[#071430] hover:bg-blue-50 flex items-center justify-center transition-colors cursor-pointer shadow"
+                aria-label="Open UAT & Master DB Menu"
+              >
+                <Menu className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
         {/* Hero Section & Select Rental Period Card */}
-        <div className="md:grid md:grid-cols-2 md:gap-8 md:items-center mb-6">
+        <div className={isShowcase && isBoardView ? 'mb-4' : 'md:grid md:grid-cols-2 md:gap-8 md:items-center mb-6'}>
           {/* Kolom Kiri: Hero Headline & Subtitle, Trust Signals, Segmented Nav */}
           <div className="flex flex-col justify-between">
             {/* Hero Headline & Subtitle */}
@@ -340,7 +361,7 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
               </div>
             </div>
 
-            {/* Check Availability Button Row */}
+            {/* Check Availability / Live Stock Button Row */}
             <div className="flex items-center gap-2">
               <Button
                 variant="default"
@@ -351,7 +372,9 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
                   <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-600" />
                 )}
                 <span>
-                  {isSyncingStock ? t.syncingStock : t.checkLiveStockBtn}
+                  {isSyncingStock
+                    ? (isShowcase ? (t.syncingStockUat || 'Syncing n8n Master DB...') : t.syncingStock)
+                    : (isShowcase ? (t.checkLiveStockUatBtn || 'Check Live Stock (n8n Sync)') : t.checkLiveStockBtn)}
                 </span>
               </Button>
               <Button
@@ -363,6 +386,14 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
                 <ArrowUpRight className="w-4 h-4" />
               </Button>
             </div>
+            {isShowcase && (
+              <div className="mt-2.5 px-1 text-[10px] text-blue-200/70 flex items-center justify-between font-mono">
+                <span className="truncate max-w-[240px]">
+                  {isSyncingStock ? 'Calling n8n...' : syncSource}
+                </span>
+                <span className="tabular-nums shrink-0">{lastSyncLatencyMs}ms</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -401,7 +432,7 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
         </div>
 
         {/* Maxi Units (NMAX & PCX) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className={isShowcase && isBoardView ? 'space-y-3.5 mb-3.5' : 'grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'}>
           {maxiUnits
             .filter((u) =>
               catalogFilter === 'available' ? u.isAvailable : true
@@ -430,6 +461,18 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
                         {t.allUnitsRented}
                       </p>
                     </div>
+                    {isShowcase && (
+                      <button
+                        onClick={() =>
+                          handleToggleCategoryStock &&
+                          handleToggleCategoryStock(unit.id, false)
+                        }
+                        className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/15 border border-white/10 text-[10px] font-mono text-blue-200 transition-colors cursor-pointer shrink-0"
+                        title="Simulate Telegram /stok command to make READY"
+                      >
+                        /stok → Set Ready
+                      </button>
+                    )}
                   </div>
                   <div className="mt-3 pt-2.5 border-t border-white/10 text-center text-xs text-slate-400 font-medium">
                     {t.unavailableForDates}
@@ -489,10 +532,10 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
                       e.stopPropagation();
                       setSelectedCategoryId && setSelectedCategoryId(unit.id);
                     }}
-                    className={`flex-1 h-11 rounded-full text-xs font-bold flex items-center justify-center transition-colors cursor-pointer ${
+                    className={`flex-1 h-11 rounded-full text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-white text-[#081530]'
-                        : 'bg-white/15 text-white hover:bg-white/25'
+                        ? 'bg-[#0f70d7] hover:bg-blue-600 text-white shadow-md ring-1 ring-white/20'
+                        : 'bg-white hover:bg-blue-50 text-[#081530] shadow-sm'
                     }`}
                   >
                     {isSelected ? t.selectedForBooking : t.selectUnit}
@@ -516,7 +559,7 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
         </div>
 
         {/* 3-Column Compact Fleet (Scoopy, Vario 160, Fazzio) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-4">
+        <div className={`grid ${isShowcase && isBoardView ? 'grid-cols-3 gap-2' : 'grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4'} mb-4`}>
           {compactUnits.map((unit) => {
             const isSelected = selectedCategoryId === unit.id;
             return (
@@ -554,13 +597,13 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
                         setSelectedCategoryId(unit.id);
                       }
                     }}
-                    className={`mt-2 w-full py-1.5 rounded-full text-[11px] font-bold transition-colors cursor-pointer ${
+                    className={`mt-2 w-full py-1.5 sm:py-2 rounded-full text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center truncate ${
                       isSelected
-                        ? 'bg-[#0f70d7] text-white shadow'
-                        : 'bg-white text-[#081530] hover:bg-blue-50'
+                        ? 'bg-[#0f70d7] hover:bg-blue-600 text-white shadow-md ring-1 ring-white/20'
+                        : 'bg-white hover:bg-blue-50 text-[#081530] shadow-sm'
                     }`}
                   >
-                    {isSelected ? 'Selected' : t.selectUnit}
+                    {isSelected ? t.selectedForBooking : t.selectUnit}
                   </button>
                 </div>
               </div>
@@ -569,7 +612,7 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
         </div>
 
         {/* Delivery Zone and FAQ in 2 Columns on Desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6 mb-6">
+        <div className={isShowcase && isBoardView ? 'space-y-3.5 mb-3.5' : 'grid grid-cols-1 md:grid-cols-2 md:gap-6 mb-6'}>
           {/* Delivery Zone and Hotel Details (ZONA_ONGKIR) */}
           <div className="rounded-[28px] bg-[#061539]/75 backdrop-blur-xl border border-white/25 shadow-2xl p-4 text-white">
             <h4 className="text-base font-bold tracking-tight">
@@ -705,7 +748,7 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
 
         {/* Sticky Price Summary (Kotak Ringkasan Harga Otomatis) */}
         <div className="rounded-[32px] bg-[#061539]/90 backdrop-blur-2xl border border-cyan-400/40 p-4 md:p-6 text-white shadow-[0_12px_45px_rgba(15,112,215,0.4)]">
-          <div className="md:flex md:items-center md:justify-between md:gap-8">
+          <div className={isShowcase && isBoardView ? '' : 'md:flex md:items-center md:justify-between md:gap-8'}>
             <div>
               <div className="text-[11px] text-blue-200/85 font-mono truncate">
                 {lang === 'en'

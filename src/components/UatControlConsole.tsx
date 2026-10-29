@@ -416,6 +416,46 @@ export function UatControlConsole({
                 </div>
 
                 <div className="space-y-3 pt-2">
+                  {/* isShowcaseMode Interactive Toggle */}
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-[#060d1d] border border-blue-400/25">
+                    <div>
+                      <div className="text-xs font-bold text-white flex items-center gap-2">
+                        <span>isShowcaseMode</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          siteConfig.isShowcaseMode
+                            ? 'bg-blue-500/20 text-blue-300 border border-blue-400/30'
+                            : 'bg-slate-700/50 text-slate-300 border border-slate-600'
+                        }`}>
+                          {siteConfig.isShowcaseMode ? 'Showcase / UAT Active' : 'Production Mode'}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-blue-200/70 mt-0.5">
+                        {siteConfig.isShowcaseMode
+                          ? 'Aktif: Board/Mobile view, hero banner, tombol UAT & latency ms.'
+                          : 'Nonaktif: Production mode bersih & responsif untuk pelanggan akhir.'}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onUpdateSiteConfig({
+                          ...siteConfig,
+                          isShowcaseMode: !siteConfig.isShowcaseMode,
+                        })
+                      }
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        siteConfig.isShowcaseMode ? 'bg-blue-600' : 'bg-slate-700'
+                      }`}
+                      aria-label="Toggle Showcase Mode"
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                          siteConfig.isShowcaseMode ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
                   <div>
                     <label className="block text-[11px] font-semibold text-blue-200/80 mb-1">
                       brandName (Nama Rental Klien)

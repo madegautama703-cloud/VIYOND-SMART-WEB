@@ -21,6 +21,12 @@ export interface SiteConfig {
   n8nPostBookingEndpoint: string;
   googleMapsLocation: string;
   usdExchangeRate: number;
+  /**
+   * System Toggle:
+   * true = Showcase / Prototype / UAT Mode (dengan banner showcase, navigasi simulasi, frame HP buatan, tombol /stok)
+   * false = Production Mode (bersih, responsif penuh langsung ke form booking, tanpa elemen UAT / simulasi)
+   */
+  isShowcaseMode: boolean;
 }
 
 export const defaultSiteConfig: SiteConfig = {
@@ -40,6 +46,7 @@ export const defaultSiteConfig: SiteConfig = {
     '/api/n8n/create-booking',
   googleMapsLocation: 'https://maps.google.com/?q=-8.6500,115.1333',
   usdExchangeRate: 15625, // Rp 1.000.000 ≈ 64 USD
+  isShowcaseMode: true,
 };
 
 export const clientPresets: Record<string, SiteConfig> = {
@@ -56,6 +63,7 @@ export const clientPresets: Record<string, SiteConfig> = {
     n8nPostBookingEndpoint: '/api/n8n/create-booking',
     googleMapsLocation: 'https://maps.google.com/?q=-8.6478,115.1385',
     usdExchangeRate: 15625,
+    isShowcaseMode: true,
   },
   uluwatuMoto: {
     brandName: 'Uluwatu Surf Riders',
@@ -69,6 +77,7 @@ export const clientPresets: Record<string, SiteConfig> = {
     n8nPostBookingEndpoint: '/api/n8n/create-booking',
     googleMapsLocation: 'https://maps.google.com/?q=-8.8149,115.0884',
     usdExchangeRate: 15625,
+    isShowcaseMode: true,
   },
 };
 
@@ -257,7 +266,9 @@ export const BILINGUAL_COPY = {
     endDate: 'END DATE',
     daysUnit: 'DAYS',
     checkLiveStockBtn: 'Check Availability',
+    checkLiveStockUatBtn: 'Check Live Stock (n8n Sync)',
     syncingStock: 'Checking Availability...',
+    syncingStockUat: 'Syncing n8n Master DB...',
     liveFleetCatalog: 'Live Fleet Catalog',
     allUnits: 'All Units',
     filters: 'Available Only',
@@ -345,7 +356,9 @@ export const BILINGUAL_COPY = {
     endDate: 'TANGGAL SELESAI',
     daysUnit: 'HARI',
     checkLiveStockBtn: 'Cek Ketersediaan',
+    checkLiveStockUatBtn: 'Cek Stok Live (Sinkron n8n)',
     syncingStock: 'Mengecek Ketersediaan...',
+    syncingStockUat: 'Menarik Data Master DB...',
     liveFleetCatalog: 'Katalog Unit Live',
     allUnits: 'Semua Unit',
     filters: 'Hanya Tersedia',
