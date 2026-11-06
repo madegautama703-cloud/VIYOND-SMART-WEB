@@ -32,33 +32,34 @@ export async function POST(req: NextRequest) {
     }
 
     // Standard Web Booking Submission (Step 3)
-    const {
-      fullName,
-      whatsappNumber,
-      nationality,
-      categoryId,
-      categoryName,
-      startDate,
-      endDate,
-      durationDays,
-      zoneId,
-      zoneLabel,
-      hotelAndRoom,
-      deliveryTime,
-      rentalSubtotal,
-      deliveryFee,
-      totalAmount,
-      paymentMethod,
-      idCardStatus,
-    } = body;
+    const fullName = String(body.fullName || body.customerName || 'Alexander Wright').trim();
+    const whatsappNumber = String(body.whatsappNumber || body.whatsapp || '+61 412 345 678').trim();
+    const nationality = String(body.nationality || 'Australia');
+    const categoryId = String(body.categoryId || body.unitId || 'nmax').toLowerCase();
+    const categoryName = String(body.categoryName || body.category || 'Yamaha NMAX 155');
+    const startDate = String(body.startDate || '2026-05-15');
+    const endDate = String(body.endDate || '2026-05-22');
+    const durationDays = Number(body.durationDays) || 7;
+    const zoneId = String(body.zoneId || body.zone || 'ZONA-2');
+    const zoneLabel = String(body.zoneLabel || body.zone || 'ZONA-2: Area Canggu & Jimbaran');
+    const hotelAndRoom = String(body.hotelAndRoom || body.hotel || 'The Haven Suites Canggu — Room 204');
+    const deliveryTime = String(body.deliveryTime || '10:00 AM WITA (Morning Delivery)');
+    const rentalSubtotal = Number(body.rentalSubtotal) || 950000;
+    const deliveryFee = Number(body.deliveryFee) || 50000;
+    const totalAmount = Number(body.totalAmount || body.total) || (rentalSubtotal + deliveryFee);
+    const paymentMethod = String(body.paymentMethod || 'COD');
+    const idCardStatus = String(body.idCardStatus || '').toLowerCase();
 
     // IF Node (Validasi Kejelasan Foto di Layar Web):
     // Jika BURAM: Langsung kirim respons berstatus error_blur dengan pesan peringatan
-    if (idCardStatus === 'blurry') {
+    if (idCardStatus === 'blurry' || idCardStatus === 'buram' || body.ocrStatus === 'BURAM') {
       return NextResponse.json(
         {
+          success: false,
           status: 'error_blur',
           ocrStatus: 'BURAM',
+          error:
+            'AI Vision OCR detected glare/blur on 1. Passport / ID Card (KTP). Please retake photo clearly without flash before submitting.',
           message:
             'AI Vision OCR detected glare/blur on 1. Passport / ID Card (KTP). Please retake photo clearly without flash before submitting.',
         },
@@ -73,17 +74,24 @@ export async function POST(req: NextRequest) {
     let assignedPlate: string | undefined;
     let xenditInvoiceUrl: string | undefined;
 
+    const pmUpper = paymentMethod.toUpperCase();
+    const isOnline =
+      pmUpper === 'INSTANT_ONLINE' ||
+      pmUpper === 'ONLINE' ||
+      pmUpper === 'QRIS';
+
     // Switch Node (3 Jalur Pembayaran)
-    if (paymentMethod === 'instant_online') {
+    if (isOnline) {
       status = 'paid_locked';
       assignedPlate = masterDb.lockAvailableUnitForOrder(categoryId) || 'DK 4821 FBV';
       xenditInvoiceUrl = `https://checkout.xendit.co/web/${orderId.toLowerCase()}`;
     } else {
       // Jalur 2 & 3 (Transfer Manual / COD WNA): Kirim notifikasi persetujuan ke Grup Telegram Owner
       status = 'pending_approval';
+      assignedPlate = 'DK 2101 KAA';
     }
 
-    const whatsappMessagePreview = `Halo ${fullName}, pesanan sewa ${categoryName} Anda dengan ID #${orderId} telah kami terima. Pengantaran dijadwalkan ke ${hotelAndRoom} (${zoneLabel}) pada ${deliveryTime}. Total: Rp ${Number(totalAmount).toLocaleString('id-ID')}.`;
+    const whatsappMessagePreview = `Halo ${fullName}, pesanan sewa ${categoryName} (${assignedPlate}) Anda dengan ID #${orderId} telah kami terima. Pengantaran dijadwalkan ke ${hotelAndRoom} (${zoneLabel}) pada ${deliveryTime}. Total: Rp ${Number(totalAmount).toLocaleString('id-ID')}.`;
 
     const newOrder: BookingOrderRecord = {
       orderId,
@@ -103,7 +111,7 @@ export async function POST(req: NextRequest) {
       rentalSubtotal,
       deliveryFee,
       totalAmount,
-      paymentMethod,
+      paymentMethod: isOnline ? 'ONLINE' : (pmUpper.includes('TRANSFER') ? 'TRANSFER' : 'COD'),
       status,
       assignedPlate,
       xenditInvoiceUrl,
@@ -120,7 +128,12 @@ export async function POST(req: NextRequest) {
     ];
 
     return NextResponse.json({
+      success: true,
       status: status === 'paid_locked' ? 'invoice_created' : 'pending_approval',
+      orderId,
+      assignedPlate,
+      xenditInvoiceUrl,
+      whatsappMessagePreview,
       order: newOrder,
       categories: masterDb.getPublicAggregatedInventory(),
       inventarisMotor: masterDb.inventarisMotor,

@@ -9,8 +9,11 @@ export function useCamera() {
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const isCancelledRef = useRef<boolean>(false);
 
+  // Stop camera tracks safely and clear video element
   const stopCamera = useCallback(() => {
+    isCancelledRef.current = true;
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => {
         try {
@@ -19,12 +22,24 @@ export function useCamera() {
       });
       streamRef.current = null;
     }
+    if (videoRef.current && videoRef.current.srcObject) {
+      const activeVideoSrc = videoRef.current.srcObject as MediaStream;
+      if (activeVideoSrc && typeof activeVideoSrc.getTracks === 'function') {
+        activeVideoSrc.getTracks().forEach((track) => {
+          try {
+            track.stop();
+          } catch {}
+        });
+      }
+      videoRef.current.srcObject = null;
+    }
     setStream(null);
     setIsLoading(false);
   }, []);
 
   const startCamera = useCallback(
     async (mode: 'user' | 'environment' = 'environment') => {
+      isCancelledRef.current = false;
       setIsLoading(true);
       setError(null);
 
@@ -52,7 +67,6 @@ export function useCamera() {
 
         let newStream: MediaStream;
         try {
-          // Attempt ideal camera constraints
           newStream = await navigator.mediaDevices.getUserMedia({
             video: {
               facingMode: { ideal: mode },
@@ -62,7 +76,6 @@ export function useCamera() {
             audio: false,
           });
         } catch (initialErr: unknown) {
-          // If ideal constraints failed (e.g. OverconstrainedError on some mobile/desktop cams), fallback to basic video
           const isConstraintErr =
             initialErr &&
             typeof initialErr === 'object' &&
@@ -80,6 +93,16 @@ export function useCamera() {
           }
         }
 
+        // Memory leak check: if unmounted while getUserMedia was resolving
+        if (isCancelledRef.current) {
+          newStream.getTracks().forEach((track) => {
+            try {
+              track.stop();
+            } catch {}
+          });
+          return;
+        }
+
         streamRef.current = newStream;
         setStream(newStream);
         setFacingMode(mode);
@@ -87,19 +110,22 @@ export function useCamera() {
         if (videoRef.current) {
           videoRef.current.srcObject = newStream;
           videoRef.current.onloadedmetadata = () => {
-            setIsLoading(false);
-            videoRef.current?.play().catch(() => {});
+            if (!isCancelledRef.current) {
+              setIsLoading(false);
+              videoRef.current?.play().catch(() => {});
+            }
           };
           videoRef.current.play().catch(() => {});
         }
 
-        // Safety timeout so isLoading is NEVER permanently stuck
-        const timer = setTimeout(() => {
-          setIsLoading(false);
+        setTimeout(() => {
+          if (!isCancelledRef.current) {
+            setIsLoading(false);
+          }
         }, 1200);
-
-        return () => clearTimeout(timer);
       } catch (err: unknown) {
+        if (isCancelledRef.current) return;
+
         let userFriendlyMessage =
           'Gagal mengakses kamera. Silakan pilih opsi unggah manual dari galeri file.';
 
@@ -172,6 +198,7 @@ export function useCamera() {
   // Clean up tracks when hook unmounts
   useEffect(() => {
     return () => {
+      isCancelledRef.current = true;
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => {
           try {
@@ -179,6 +206,17 @@ export function useCamera() {
           } catch {}
         });
         streamRef.current = null;
+      }
+      if (videoRef.current && videoRef.current.srcObject) {
+        const vidStream = videoRef.current.srcObject as MediaStream;
+        if (vidStream && typeof vidStream.getTracks === 'function') {
+          vidStream.getTracks().forEach((track) => {
+            try {
+              track.stop();
+            } catch {}
+          });
+        }
+        videoRef.current.srcObject = null;
       }
     };
   }, []);

@@ -7,6 +7,7 @@ import {
   defaultSiteConfig,
   BILINGUAL_COPY,
   VehicleCategory,
+  VEHICLE_CATEGORIES,
   DeliveryZone,
   DELIVERY_TIME_SLOTS,
 } from '@/config/siteConfig';
@@ -89,6 +90,7 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
   lastSyncLatencyMs = 38,
   catalogFilter = 'all',
   setCatalogFilter,
+  categories = [],
   maxiUnits = [],
   compactUnits = [],
   selectedCategoryId = 'nmax',
@@ -118,6 +120,21 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
     isShowcaseMode !== undefined
       ? isShowcaseMode
       : siteConfig?.isShowcaseMode ?? true;
+
+  // Derivasi ketersediaan unit terbaru langsung dari state categories agar kartu katalog selalu sinkron
+  const currentMaxiUnits: any[] =
+    categories && categories.length > 0
+      ? categories.filter((c: any) => c.segment === 'maxi')
+      : maxiUnits.length > 0
+      ? maxiUnits
+      : VEHICLE_CATEGORIES.filter((c: any) => c.segment === 'maxi');
+
+  const currentCompactUnits: any[] =
+    categories && categories.length > 0
+      ? categories.filter((c: any) => c.segment === 'compact')
+      : compactUnits.length > 0
+      ? compactUnits
+      : VEHICLE_CATEGORIES.filter((c: any) => c.segment === 'compact');
 
   return (
     <div
@@ -433,11 +450,11 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
 
         {/* Maxi Units (NMAX & PCX) */}
         <div className={isShowcase && isBoardView ? 'space-y-3.5 mb-3.5' : 'grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'}>
-          {maxiUnits
-            .filter((u) =>
+          {currentMaxiUnits
+            .filter((u: any) =>
               catalogFilter === 'available' ? u.isAvailable : true
             )
-            .map((unit) => {
+            .map((unit: any) => {
             const isSelected = selectedCategoryId === unit.id;
             if (!unit.isAvailable) {
               // Sold Out Card
@@ -560,55 +577,92 @@ export const Step1Catalog: React.FC<Step1CatalogProps> = ({
 
         {/* 3-Column Compact Fleet (Scoopy, Vario 160, Fazzio) */}
         <div className={`grid ${isShowcase && isBoardView ? 'grid-cols-3 gap-2' : 'grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4'} mb-4`}>
-          {compactUnits.map((unit) => {
-            const isSelected = selectedCategoryId === unit.id;
-            return (
-              <div
-                key={unit.id}
-                onClick={() =>
-                  unit.isAvailable &&
-                  setSelectedCategoryId &&
-                  setSelectedCategoryId(unit.id)
-                }
-                className={`rounded-[22px] p-2.5 border backdrop-blur-xl transition-all flex flex-col justify-between cursor-pointer ${
-                  isSelected
-                    ? 'bg-[#0f70d7]/35 border-cyan-400 shadow-[0_0_20px_rgba(92,225,230,0.3)] ring-1 ring-cyan-400/40'
-                    : 'bg-[#061539]/75 border-white/15 hover:border-cyan-400/40 hover:bg-[#061539]/90'
-                }`}
-              >
-                <div className="text-[10px] font-semibold text-emerald-300 truncate">
-                  ● {unit.availableUnits} {t.readySuffix}
-                </div>
+          {currentCompactUnits
+            .filter((unit: any) =>
+              catalogFilter === 'available' ? unit.isAvailable : true
+            )
+            .map((unit: any) => {
+              const isSelected = selectedCategoryId === unit.id;
+              const isAvailable = Boolean(unit.isAvailable && unit.availableUnits > 0);
 
-                <ScooterSilhouette variant={unit.id} size="sm" />
+              return (
+                <div
+                  key={unit.id}
+                  onClick={() =>
+                    isAvailable &&
+                    setSelectedCategoryId &&
+                    setSelectedCategoryId(unit.id)
+                  }
+                  className={`rounded-[22px] p-2.5 border backdrop-blur-xl transition-all flex flex-col justify-between ${
+                    !isAvailable
+                      ? 'bg-slate-900/40 border-rose-500/20 opacity-70 cursor-not-allowed'
+                      : isSelected
+                      ? 'bg-[#0f70d7]/35 border-cyan-400 shadow-[0_0_20px_rgba(92,225,230,0.3)] ring-1 ring-cyan-400/40 cursor-pointer'
+                      : 'bg-[#061539]/75 border-white/15 hover:border-cyan-400/40 hover:bg-[#061539]/90 cursor-pointer'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-1">
+                    <div
+                      className={`text-[10px] font-semibold truncate ${
+                        !isAvailable ? 'text-rose-400' : 'text-emerald-300'
+                      }`}
+                    >
+                      {isAvailable
+                        ? `● ${unit.availableUnits} ${t.readySuffix}`
+                        : `🔴 ${t.soldOut || 'Sold Out'}`}
+                    </div>
+                    {!isAvailable && isShowcase && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleCategoryStock &&
+                            handleToggleCategoryStock(unit.id, false);
+                        }}
+                        className="px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[9px] font-mono text-blue-200 cursor-pointer shrink-0"
+                        title="Simulate Telegram /stok command to set READY"
+                      >
+                        /stok
+                      </button>
+                    )}
+                  </div>
 
-                <div>
-                  <div className="text-xs font-bold text-white truncate">
-                    {unit.shortName}
+                  <ScooterSilhouette variant={unit.id} size="sm" />
+
+                  <div>
+                    <div className="text-xs font-bold text-white truncate">
+                      {unit.shortName}
+                    </div>
+                    <div className="text-[10px] text-blue-100/80 font-mono tabular-nums">
+                      Rp {unit.dailyPrice / 1000}k/day
+                    </div>
+                    <button
+                      type="button"
+                      disabled={!isAvailable}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isAvailable && setSelectedCategoryId) {
+                          setSelectedCategoryId(unit.id);
+                        }
+                      }}
+                      className={`mt-2 w-full py-1.5 sm:py-2 rounded-full text-[11px] font-bold transition-all flex items-center justify-center truncate ${
+                        !isAvailable
+                          ? 'bg-slate-800 text-slate-500 border border-slate-700/60 cursor-not-allowed opacity-70'
+                          : isSelected
+                          ? 'bg-[#0f70d7] hover:bg-blue-600 text-white shadow-md ring-1 ring-white/20 cursor-pointer'
+                          : 'bg-white hover:bg-blue-50 text-[#081530] shadow-sm cursor-pointer'
+                      }`}
+                    >
+                      {!isAvailable
+                        ? t.soldOut || 'Sold Out'
+                        : isSelected
+                        ? t.selectedForBooking
+                        : t.selectUnit}
+                    </button>
                   </div>
-                  <div className="text-[10px] text-blue-100/80 font-mono tabular-nums">
-                    Rp {unit.dailyPrice / 1000}k/day
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (unit.isAvailable && setSelectedCategoryId) {
-                        setSelectedCategoryId(unit.id);
-                      }
-                    }}
-                    className={`mt-2 w-full py-1.5 sm:py-2 rounded-full text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center truncate ${
-                      isSelected
-                        ? 'bg-[#0f70d7] hover:bg-blue-600 text-white shadow-md ring-1 ring-white/20'
-                        : 'bg-white hover:bg-blue-50 text-[#081530] shadow-sm'
-                    }`}
-                  >
-                    {isSelected ? t.selectedForBooking : t.selectUnit}
-                  </button>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
 
         {/* Delivery Zone and FAQ in 2 Columns on Desktop */}

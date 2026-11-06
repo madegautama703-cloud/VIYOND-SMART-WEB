@@ -66,6 +66,7 @@ interface KycDocSlotState {
   ocrName?: string;
   ocrNumber?: string;
   ocrMessage: string;
+  base64Data?: string;
 }
 
 export function BookingWizardApp() {
@@ -297,142 +298,206 @@ export function BookingWizardApp() {
     return isoDate;
   };
 
-  // Fetch live inventory from n8n Endpoint 1
-  const fetchLiveInventory = async () => {
+  // Fetch live inventory from n8n Endpoint 1 (GET Request with date triggers)
+  const fetchLiveInventory = async (overrideStart?: string, overrideEnd?: string) => {
     setIsSyncingStock(true);
     const startTime = performance.now();
     try {
-      const webhookEndpoint =
+      const activeStart = overrideStart !== undefined ? overrideStart : startDate;
+      const activeEnd = overrideEnd !== undefined ? overrideEnd : endDate;
+
+      const baseEndpoint =
         process.env.NEXT_PUBLIC_N8N_GET_INVENTORY_WEBHOOK_URL ||
         siteConfig.n8nGetInventoryEndpoint ||
         'https://n8n.srv2075779.hstgr.cloud/webhook/viyond-live-inventory';
 
-      // 1. Try fetching via Next.js proxy route
-      const proxyUrl = `/api/n8n/viyond-live-inventory?endpoint=${encodeURIComponent(
-        webhookEndpoint
-      )}`;
-      let data: any = null;
+      // Attach date query parameters
+      const dateParams = new URLSearchParams();
+      if (activeStart) dateParams.set('startDate', activeStart);
+      if (activeEnd) dateParams.set('endDate', activeEnd);
+      const dateQueryStr = dateParams.toString() ? `?${dateParams.toString()}` : '';
 
+      const n8nEndpoint = baseEndpoint.includes('?')
+        ? `${baseEndpoint}&${dateParams.toString()}`
+        : `${baseEndpoint}${dateQueryStr}`;
+
+      let rawData: any = null;
+      let latencyMs = 0;
+      let syncSourceLabel = `n8n Webhook (${baseEndpoint})`;
+
+      // 1. Eksekusi GET request ke process.env.NEXT_PUBLIC_N8N_GET_INVENTORY_WEBHOOK_URL
       try {
-        const res = await fetch(proxyUrl);
-        if (res.ok) {
-          data = await res.json();
+        const directRes = await fetch(n8nEndpoint, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+          },
+          cache: 'no-store',
+        });
+
+        if (directRes.ok) {
+          rawData = await directRes.json();
+          latencyMs = Math.round(performance.now() - startTime);
+          syncSourceLabel = `Production n8n Webhook (${baseEndpoint})`;
         }
-      } catch {
-        // proxy call failed or network offline
+      } catch (directErr) {
+        // Direct browser fetch bisa gagal karena CORS preflight / network limitation pada browser klien
+        console.warn(
+          '[n8n Live Inventory] Direct GET fetch failed (likely browser CORS), switching to Next.js API proxy fallback:',
+          directErr
+        );
       }
 
-      // 2. If proxy fell back, also try direct browser fetch to n8n if valid URL
-      if (!data || data.isLiveProduction === false) {
-        if (webhookEndpoint.startsWith('http')) {
-          try {
-            const directRes = await fetch(webhookEndpoint, {
-              method: 'GET',
-              headers: { Accept: 'application/json' },
-              cache: 'no-store',
-            });
-            if (directRes.ok) {
-              const rawDirect = await directRes.json();
-              let incoming = rawDirect;
-              if (Array.isArray(rawDirect) && rawDirect.length > 0) {
-                if (rawDirect[0].category || rawDirect[0].availableCount !== undefined) {
-                  incoming = { motors: rawDirect };
-                } else {
-                  incoming = rawDirect[0].json || rawDirect[0];
-                }
-              } else if (rawDirect.data) {
-                incoming = rawDirect.data;
-              }
+      // 2. Jika direct GET tidak merespons (misal diblokir CORS pada browser), gunakan API proxy backend Next.js
+      if (!rawData) {
+        try {
+          const proxyUrl = `/api/n8n/viyond-live-inventory?endpoint=${encodeURIComponent(
+            baseEndpoint
+          )}${activeStart ? `&startDate=${encodeURIComponent(activeStart)}` : ''}${activeEnd ? `&endDate=${encodeURIComponent(activeEnd)}` : ''}`;
+          const proxyRes = await fetch(proxyUrl, {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+            },
+            cache: 'no-store',
+          });
 
-              const incomingMotorsList = incoming?.motors || incoming?.categories;
-              if (Array.isArray(incomingMotorsList) && incomingMotorsList.length > 0) {
-                setRawMotors(incomingMotorsList);
-                const mapped = VEHICLE_CATEGORIES.map((cat) => {
-                  const matched = incomingMotorsList.find((m: any) => {
-                    const catName = String(m.category || m.name || '').trim().toUpperCase();
-                    const catId = String(m.id || m.categoryId || '').trim().toLowerCase();
-                    const targetId = cat.id.toLowerCase();
-                    const targetName = cat.name.toUpperCase();
-                    return (
-                      catName === targetId.toUpperCase() ||
-                      catName.includes(targetId.toUpperCase()) ||
-                      targetName.includes(catName) ||
-                      catId === targetId ||
-                      catId.includes(targetId)
-                    );
-                  });
+          if (proxyRes.ok) {
+            rawData = await proxyRes.json();
+            latencyMs = rawData.latencyMs || Math.round(performance.now() - startTime);
+            syncSourceLabel = rawData.source || `n8n Proxy (${baseEndpoint})`;
+          }
+        } catch (proxyErr) {
+          console.error('[n8n Live Inventory] Proxy fallback failed:', proxyErr);
+        }
+      }
 
-                  if (matched) {
-                    const statusUpper = String(matched.status || '').trim().toUpperCase();
-                    const rawCount =
-                      matched.availableCount ??
-                      matched.availableUnits ??
-                      matched.readyUnits ??
-                      matched.stock;
-                    let count = 0;
-                    if (rawCount !== undefined && rawCount !== null) {
-                      count = Number(rawCount) || 0;
-                    } else if (statusUpper === 'READY') {
-                      count = 2;
-                    }
-                    if (['SOLD_OUT', 'SOLDOUT', 'DISEWA', 'BENGKEL'].includes(statusUpper)) {
-                      count = 0;
-                    }
-                    return {
-                      ...cat,
-                      availableUnits: count,
-                      totalFleetUnits: matched.totalUnits
-                        ? Number(matched.totalUnits)
-                        : Math.max(count, 3),
-                      isAvailable: count > 0,
-                      dailyPrice: matched.dailyPrice ? Number(matched.dailyPrice) : cat.dailyPrice,
-                      weeklyPrice: matched.weeklyPrice ? Number(matched.weeklyPrice) : cat.weeklyPrice,
-                      monthlyPrice: matched.monthlyPrice ? Number(matched.monthlyPrice) : cat.monthlyPrice,
-                    };
-                  }
-                  const defaultReady =
-                    INITIAL_INVENTARIS_MOTOR.filter(
-                      (u) => u.categoryId === cat.id && u.status === 'READY'
-                    ).length || 2;
-                  return {
-                    ...cat,
-                    availableUnits: defaultReady,
-                    totalFleetUnits: Math.max(defaultReady + 1, 3),
-                    isAvailable: defaultReady > 0,
-                  };
-                });
+      // 3. Ekstraksi dan perbarui angka ketersediaan unit ('Available Units') di kartu katalog motor berdasarkan JSON
+      if (rawData) {
+        let incomingMotors: any[] = [];
+        let incomingZones: any[] = [];
 
-                data = {
-                  categories: mapped,
-                  source: `Production n8n Webhook (${webhookEndpoint})`,
-                  latencyMs: Math.round(performance.now() - startTime),
-                };
-              }
+        // Normalisasi format response JSON dari n8n / backend
+        if (Array.isArray(rawData)) {
+          if (rawData.length > 0) {
+            if (
+              rawData[0].category ||
+              rawData[0].name ||
+              rawData[0].availableUnits !== undefined ||
+              rawData[0].availableCount !== undefined ||
+              rawData[0].readyUnits !== undefined ||
+              rawData[0].stock !== undefined
+            ) {
+              incomingMotors = rawData;
+            } else if (rawData[0].json) {
+              const j = rawData[0].json;
+              incomingMotors = j.motors || j.categories || (Array.isArray(j) ? j : []);
+              if (j.zones) incomingZones = j.zones;
             }
-          } catch {
-            // direct fetch failed
+          }
+        } else if (typeof rawData === 'object' && rawData !== null) {
+          if (Array.isArray(rawData.motors)) {
+            incomingMotors = rawData.motors;
+          } else if (Array.isArray(rawData.categories)) {
+            incomingMotors = rawData.categories;
+          } else if (Array.isArray(rawData.data)) {
+            incomingMotors = rawData.data;
+          }
+          if (Array.isArray(rawData.zones)) {
+            incomingZones = rawData.zones;
           }
         }
-      }
 
-      if (data) {
-        if (data.motors && Array.isArray(data.motors) && data.motors.length > 0) {
-          setRawMotors(data.motors);
+        if (incomingMotors.length > 0) {
+          setRawMotors(incomingMotors);
         }
-        if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
-          setCategories(data.categories);
-          // Automatically switch selected category to an available unit if currently selected unit is sold out
-          setSelectedCategoryId((prevId) => {
-            const current = data.categories.find((c: any) => c.id === prevId);
-            if (!current || !current.isAvailable) {
-              const firstAvailable = data.categories.find((c: any) => c.isAvailable);
-              return firstAvailable ? firstAvailable.id : prevId;
-            }
-            return prevId;
+
+        // Petakan ketersediaan unit ('Available Units') ke seluruh kategori kendaraan
+        const updatedCategories = VEHICLE_CATEGORIES.map((cat) => {
+          const matched = incomingMotors.find((m: any) => {
+            const catName = String(m.category || m.name || m.title || '').trim().toUpperCase();
+            const catId = String(m.id || m.categoryId || '').trim().toLowerCase();
+            const targetId = cat.id.toLowerCase();
+            const targetName = cat.name.toUpperCase();
+            return (
+              catName === targetId.toUpperCase() ||
+              catName.includes(targetId.toUpperCase()) ||
+              targetName.includes(catName) ||
+              catId === targetId ||
+              catId.includes(targetId)
+            );
           });
-        }
-        if (data.zones && Array.isArray(data.zones)) {
-          const normalizedZones: DeliveryZone[] = data.zones.map((z: any) => ({
+
+          if (matched) {
+            const statusUpper = String(matched.status || '').trim().toUpperCase();
+            const rawCount =
+              matched.availableUnits ??
+              matched.availableCount ??
+              matched.readyUnits ??
+              matched.stock ??
+              matched.count;
+
+            let count = 0;
+            if (rawCount !== undefined && rawCount !== null) {
+              count = Number(rawCount) || 0;
+            } else if (statusUpper === 'READY') {
+              count = 2;
+            }
+
+            // Jika status eksplisit Sold Out / Sedang Disewa / Di Bengkel
+            if (['SOLD_OUT', 'SOLDOUT', 'DISEWA', 'BENGKEL'].includes(statusUpper)) {
+              count = 0;
+            }
+
+            const isAvailable = count > 0;
+
+            return {
+              ...cat,
+              availableUnits: count,
+              totalFleetUnits: matched.totalUnits
+                ? Number(matched.totalUnits)
+                : Math.max(count, 3),
+              isAvailable,
+              dailyPrice: matched.dailyPrice ? Number(matched.dailyPrice) : cat.dailyPrice,
+              weeklyPrice: matched.weeklyPrice ? Number(matched.weeklyPrice) : cat.weeklyPrice,
+              monthlyPrice: matched.monthlyPrice ? Number(matched.monthlyPrice) : cat.monthlyPrice,
+            };
+          }
+
+          // Fallback ke data ketersediaan yang ada saat ini jika kategori tidak ada dalam respons parsial
+          const existing = categories.find((c) => c.id === cat.id);
+          const defaultCount =
+            existing?.availableUnits ??
+            (INITIAL_INVENTARIS_MOTOR.filter(
+              (u) => u.categoryId === cat.id && u.status === 'READY'
+            ).length || 2);
+
+          return {
+            ...cat,
+            availableUnits: defaultCount,
+            totalFleetUnits: Math.max(defaultCount + 1, 3),
+            isAvailable: defaultCount > 0,
+          };
+        });
+
+        // Update state categories -> Otomatis memperbarui angka 'Available Units' pada kartu katalog motor
+        setCategories(updatedCategories);
+        setLastSyncLatencyMs(latencyMs || Math.round(performance.now() - startTime));
+        setSyncSource(syncSourceLabel);
+
+        // Jika unit yang dipilih saat ini ternyata Sold Out, otomatis pindahkan seleksi ke unit pertama yang Ready
+        setSelectedCategoryId((prevId) => {
+          const current = updatedCategories.find((c) => c.id === prevId);
+          if (!current || !current.isAvailable) {
+            const firstAvailable = updatedCategories.find((c) => c.isAvailable);
+            return firstAvailable ? firstAvailable.id : prevId;
+          }
+          return prevId;
+        });
+
+        // Sinkronisasi data zona ongkir jika ada dalam respons n8n
+        if (incomingZones.length > 0) {
+          const normalizedZones: DeliveryZone[] = incomingZones.map((z: any) => ({
             code: z.code || 'ZONA-1',
             name: z.name || `Zona ${z.code}`,
             coverage: z.coverage || z.areaNames || '',
@@ -444,26 +509,27 @@ export function BookingWizardApp() {
           }));
           setZones(normalizedZones);
         }
-        if (data.latencyMs) setLastSyncLatencyMs(data.latencyMs);
-        if (data.source) setSyncSource(data.source);
-        if (data.internalSheetPreview?.inventarisMotor) {
-          setInventarisMotor(data.internalSheetPreview.inventarisMotor);
+
+        // Sinkronisasi data inventaris internal untuk konsol UAT drawer
+        if (rawData.internalSheetPreview?.inventarisMotor) {
+          setInventarisMotor(rawData.internalSheetPreview.inventarisMotor);
         }
-        if (data.internalSheetPreview?.orders?.length) {
-          setOrders(data.internalSheetPreview.orders);
-          setActiveOrder(data.internalSheetPreview.orders[0]);
+        if (rawData.internalSheetPreview?.orders?.length) {
+          setOrders(rawData.internalSheetPreview.orders);
+          setActiveOrder(rawData.internalSheetPreview.orders[0]);
         }
       }
-    } catch {
-      // Keep local store fallback
+    } catch (err) {
+      console.error('[n8n Live Inventory] Exception fetching live inventory:', err);
     } finally {
       setTimeout(() => setIsSyncingStock(false), 200);
     }
   };
 
+  // Trigger live inventory fetch on mount and whenever rental dates change
   useEffect(() => {
     fetchLiveInventory();
-  }, [siteConfig.n8nGetInventoryEndpoint]);
+  }, [startDate, endDate, siteConfig.n8nGetInventoryEndpoint]);
 
   // Derived price calculation
   const selectedCategory =
@@ -497,12 +563,14 @@ export function BookingWizardApp() {
           fileName: result.fileName,
           compressedKb: result.compressedSizeKb,
           originalKb: result.originalSizeKb,
+          base64Data: result.base64DataUrl,
           ocrName: fullName.toUpperCase(),
           ocrNumber: 'PA8934120',
           ocrMessage: `AI OCR: JELAS (PA8934120) — Verified via Camera (${result.compressedSizeKb} KB)`,
         },
       }));
       setBookingFeedbackError(null);
+      setBookingSubmissionError(null);
     } else {
       setKycDocs((prev) => ({
         ...prev,
@@ -512,6 +580,7 @@ export function BookingWizardApp() {
           fileName: result.fileName,
           compressedKb: result.compressedSizeKb,
           originalKb: result.originalSizeKb,
+          base64Data: result.base64DataUrl,
           ocrMessage: `Verified Ready (${result.compressedSizeKb} KB)`,
         },
       }));
@@ -546,7 +615,7 @@ export function BookingWizardApp() {
           }),
         });
         const ocrData = await ocrRes.json();
-        const isClear = ocrData.isClear !== false;
+        const isClear = ocrData.isClear !== false && ocrData.status_kejelasan_foto !== 'BURAM';
 
         setKycDocs((prev) => ({
           ...prev,
@@ -556,6 +625,7 @@ export function BookingWizardApp() {
             fileName: compressed.fileName,
             compressedKb: compressed.compressedSizeKb,
             originalKb: compressed.originalSizeKb,
+            base64Data: compressed.base64DataUrl,
             ocrName: ocrData.nama_lengkap || fullName.toUpperCase(),
             ocrNumber: ocrData.nomor_identitas || 'PA8934120',
             ocrMessage: isClear
@@ -563,10 +633,13 @@ export function BookingWizardApp() {
                   ocrData.reason || 'Clear'
                 }`
               : ocrData.reason ||
-                'Text unreadable due to glare/blur. Please retake photo clearly without flash.',
+                'Photo is blurry / glare detected. Please retake photo clearly without flash.',
           },
         }));
-        if (isClear) setBookingFeedbackError(null);
+        if (isClear) {
+          setBookingFeedbackError(null);
+          setBookingSubmissionError(null);
+        }
       } else {
         setKycDocs((prev) => ({
           ...prev,
@@ -576,6 +649,7 @@ export function BookingWizardApp() {
             fileName: compressed.fileName,
             compressedKb: compressed.compressedSizeKb,
             originalKb: compressed.originalSizeKb,
+            base64Data: compressed.base64DataUrl,
             ocrMessage: `Compressed: ${compressed.compressedSizeKb} KB — Clear`,
           },
         }));
@@ -712,12 +786,8 @@ export function BookingWizardApp() {
       !passportSlot.fileName.startsWith('Upload ') &&
       passportSlot.fileName.trim().length > 3
     );
-    if (!isPassportFilled || passportSlot?.status !== 'verified') {
-      if (passportSlot?.status === 'blurry') {
-        missing.push('Foto Paspor / KTP: Kualitas buram/glare. Silakan gunakan tombol perbaiki/foto ulang tanpa flash.');
-      } else {
-        missing.push('Foto Paspor / KTP (Wajib diunggah & lolos verifikasi)');
-      }
+    if (!isPassportFilled) {
+      missing.push('Foto Paspor / KTP (Wajib diunggah)');
     }
 
     const selfieSlot = kycDocs.selfie;
@@ -831,34 +901,101 @@ export function BookingWizardApp() {
       hotelSlot.fileName.trim(),
     ];
 
-    // Payload strictly matching the required 12 fields and standardized values
+    // Payload strictly matching the required fields and technical module specs (Endpoint 2)
     const bookingPayload = {
+      orderId: `ORD-2026-${Math.floor(881 + Math.random() * 110)}`,
       unitId,
       category,
+      categoryId: selectedCategory.id,
+      categoryName: selectedCategory.name,
       plate,
       customerName: fullName.trim(),
+      fullName: fullName.trim(),
       whatsapp: `${countryCode} ${whatsappLocal}`.trim(),
+      whatsappNumber: `${countryCode} ${whatsappLocal}`.trim(),
       nationality: cleanNationality,
       startDate: startDate.trim(),
       endDate: endDate.trim(),
+      durationDays: rentalDays,
       zone,
+      zoneId: selectedZone?.code || selectedZone?.id || 'ZONA-2',
+      zoneLabel: `${zone}: ${(selectedZone?.coverage || selectedZone?.areaNames || '').split(',')[0]?.trim() || selectedZone?.name || 'Area Delivery'}`,
       hotel: hotelAndRoom.trim(),
+      hotelAndRoom: hotelAndRoom.trim(),
+      deliveryTime,
+      rentalSubtotal: priceBreakdown.rentalSubtotal,
+      deliveryFee: priceBreakdown.deliveryFee,
       total: priceBreakdown.totalAmount,
+      totalAmount: priceBreakdown.totalAmount,
       paymentMethod: cleanPaymentMethod,
+      idCardStatus: kycDocs.passport.status,
+      id_card_image: kycDocs.passport.base64Data || undefined,
       kycFiles,
+      kycDocuments: {
+        passport: {
+          fileName: passportSlot.fileName,
+          status: passportSlot.status,
+          sizeKb: passportSlot.compressedKb,
+          base64: passportSlot.base64Data,
+        },
+        selfie: {
+          fileName: selfieSlot.fileName,
+          status: selfieSlot.status,
+          sizeKb: selfieSlot.compressedKb,
+          base64: selfieSlot.base64Data,
+        },
+        flight: {
+          fileName: flightSlot.fileName,
+          status: flightSlot.status,
+          sizeKb: flightSlot.compressedKb,
+          base64: flightSlot.base64Data,
+        },
+        hotel: {
+          fileName: hotelSlot.fileName,
+          status: hotelSlot.status,
+          sizeKb: hotelSlot.compressedKb,
+          base64: hotelSlot.base64Data,
+        },
+      },
     };
 
     console.log('[VIYOND Create Booking] Request payload sent to /api/n8n/create-booking:', bookingPayload);
 
     try {
-      const res = await fetch('/api/n8n/create-booking', {
+      const res = await fetch(siteConfig.n8nPostBookingEndpoint || '/api/n8n/create-booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookingPayload),
       });
 
       const data = await res.json();
-      console.log('[VIYOND Create Booking] Response received from /api/n8n/create-booking:', data);
+      console.log('[VIYOND Create Booking] Response received:', data);
+
+      // IF Node (OpenAI Vision OCR Clarity Check): Handle error_blur without wiping form data
+      if (res.status === 422 || data.status === 'error_blur') {
+        const blurMsg =
+          data.message ||
+          data.error ||
+          'Photo is blurry. AI Vision OCR detected glare/blur on 1. Passport / ID Card (KTP). Please retake photo clearly without flash.';
+        setBookingSubmissionError(blurMsg);
+        setBookingFeedbackError(blurMsg);
+        setKycDocs((prev) => ({
+          ...prev,
+          passport: {
+            ...prev.passport,
+            status: 'blurry',
+            ocrMessage: blurMsg,
+          },
+        }));
+
+        // Instantly return user to Step 2 so they can retake/re-upload photo without losing any typed details
+        setActiveStep(2);
+        setTimeout(() => {
+          const step2El = document.getElementById('step-2-container');
+          if (step2El) step2El.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        return;
+      }
 
       if (!res.ok || data.success === false) {
         const errorMsg = data.error || data.message || `Booking failed with status ${res.status}`;
@@ -867,9 +1004,15 @@ export function BookingWizardApp() {
         return;
       }
 
-      // Success handling: capture orderId from n8n response
-      const orderId = data.orderId || `ORD-${Date.now()}`;
-      const status = data.status || 'PENDING';
+      // Success handling: capture orderId, locked plate, and payment link from n8n response
+      const orderId = data.orderId || data.order?.orderId || `ORD-${Date.now()}`;
+      const status = data.status || data.order?.status || 'PENDING';
+      const assignedPlate = data.assignedPlate || data.order?.assignedPlate || plate;
+      const xenditInvoiceUrl = data.xenditInvoiceUrl || data.order?.xenditInvoiceUrl;
+      const waPreview =
+        data.whatsappMessagePreview ||
+        data.order?.whatsappMessagePreview ||
+        `Halo ${fullName.trim()}, pesanan sewa ${selectedCategory.name} (${assignedPlate}) Anda dengan ID #${orderId} telah kami terima di n8n & VIYOND Booking System. Kurir siap mengantar ke ${hotelAndRoom} pukul ${deliveryTime}. Total: Rp ${priceBreakdown.totalAmount.toLocaleString('id-ID')}.`;
 
       setSubmittedOrderId(orderId);
       setSubmittedOrderStatus(status);
@@ -897,9 +1040,10 @@ export function BookingWizardApp() {
         deliveryFee: priceBreakdown.deliveryFee,
         totalAmount: priceBreakdown.totalAmount,
         paymentMethod: cleanPaymentMethod,
-        assignedPlate: plate,
+        assignedPlate,
+        xenditInvoiceUrl,
         status: status === 'PENDING' ? 'pending_approval' : status,
-        whatsappMessagePreview: `Halo ${fullName.trim()}, pesanan sewa ${selectedCategory.name} (${plate}) Anda dengan ID #${orderId} telah kami terima di n8n & VIYOND Booking System. Kurir siap mengantar ke ${hotelAndRoom} pukul ${deliveryTime}.`,
+        whatsappMessagePreview: waPreview,
       }));
 
       // Update WhatsApp chat simulation
@@ -907,13 +1051,16 @@ export function BookingWizardApp() {
         ...prev,
         {
           sender: 'bot',
-          text: `Halo ${fullName.trim()}, pesanan sewa ${selectedCategory.name} (${plate}) Anda dengan ID #${orderId} telah kami terima di n8n & VIYOND Booking System. Kurir siap mengantar ke ${hotelAndRoom} pukul ${deliveryTime}.`,
+          text: waPreview,
           time: new Date().toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
           }),
         },
       ]);
+
+      // 4. Setelah sukses, panggil ulang fetch inventory supaya kartu motor langsung berubah secara real-time
+      await fetchLiveInventory();
 
       // 4. Setelah sukses, panggil ulang fetch inventory supaya kartu motor langsung berubah
       await fetchLiveInventory();
@@ -1509,6 +1656,21 @@ export function BookingWizardApp() {
                   )}
                 </div>
 
+                {/* Red Blurry Alert Banner on Step 2 per Module Specification */}
+                {(isPassportBlurry || (bookingSubmissionError && bookingSubmissionError.toLowerCase().includes('blur'))) && (
+                  <div className="mb-4 p-3.5 rounded-2xl bg-rose-950/90 border border-rose-500/80 text-rose-100 flex items-start gap-2.5 shadow-lg animate-in fade-in duration-200">
+                    <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-xs font-bold text-white">
+                        AI Vision OCR: Photo is Blurry / Pantulan Cahaya Terdeteksi
+                      </div>
+                      <div className="text-[11px] text-rose-200/90 mt-0.5 leading-relaxed">
+                        Foto Paspor / KTP tidak terbaca jelas karena silau atau buram. Mohon ambil foto ulang tanpa lampu flash di ruangan berpenerangan cukup. Isian nama dan tanggal Anda tetap tersimpan.
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Hidden File Inputs */}
                 {(['passport', 'selfie', 'flight', 'hotel'] as const).map(
                   (slotKey) => (
@@ -2025,6 +2187,31 @@ export function BookingWizardApp() {
                             >
                               ✓ Approve COD & Lock Plate
                             </button>
+                          </div>
+                        )}
+
+                        {/* Jalur 1: Gateway Xendit / Midtrans Online Invoice Link */}
+                        {activeOrder.xenditInvoiceUrl && (
+                          <div className="mt-3.5 p-3 rounded-2xl bg-blue-950/80 border border-blue-400/60 shadow-lg">
+                            <div className="text-xs font-bold text-white mb-1.5 flex items-center justify-between">
+                              <span className="flex items-center gap-1.5">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                Xendit / Midtrans Invoice Created
+                              </span>
+                              <span className="text-[10px] text-cyan-300 font-mono">Unit Plate Locked</span>
+                            </div>
+                            <p className="text-[11px] text-blue-200/90 mb-2.5">
+                              Selesaikan pembayaran sewa untuk konfirmasi instan. Pelat nomor unit ({activeOrder.assignedPlate || 'DK 4821 FBV'}) telah dikunci otomatis.
+                            </p>
+                            <a
+                              href={activeOrder.xenditInvoiceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all cursor-pointer"
+                            >
+                              <span>Pay Now via Xendit ({formatIdr(activeOrder.totalAmount)})</span>
+                              <ArrowUpRight className="w-4 h-4" />
+                            </a>
                           </div>
                         )}
 

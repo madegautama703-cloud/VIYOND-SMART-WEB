@@ -107,8 +107,28 @@ function mapMotorsToCategories(motors: RawMotorItem[]): EnrichedCategory[] {
 // Endpoint 1: GET /webhook/viyond-live-inventory (Cek Stok & Zona)
 export async function GET(req: NextRequest) {
   const startTime = performance.now();
-  const requestedEndpoint =
-    req.nextUrl.searchParams.get('endpoint') || PRODUCTION_N8N_WEBHOOK_URL;
+  const url = req.nextUrl || new URL(req.url, 'http://localhost:3000');
+  const searchParams = url.searchParams;
+
+  const rawRequestedEndpoint =
+    searchParams.get('endpoint') ||
+    process.env.NEXT_PUBLIC_N8N_GET_INVENTORY_WEBHOOK_URL ||
+    process.env.N8N_GET_INVENTORY_WEBHOOK_URL ||
+    PRODUCTION_N8N_WEBHOOK_URL;
+
+  const startDate = searchParams.get('startDate');
+  const endDate = searchParams.get('endDate');
+
+  // Build target URL with date range query parameters for n8n webhook
+  let requestedEndpoint = rawRequestedEndpoint;
+  try {
+    const urlObj = new URL(rawRequestedEndpoint);
+    if (startDate) urlObj.searchParams.set('startDate', startDate);
+    if (endDate) urlObj.searchParams.set('endDate', endDate);
+    requestedEndpoint = urlObj.toString();
+  } catch {
+    // If not a valid absolute URL, leave as is
+  }
 
   let categories = masterDb.getPublicAggregatedInventory();
   let zones = masterDb.zonaOngkir;

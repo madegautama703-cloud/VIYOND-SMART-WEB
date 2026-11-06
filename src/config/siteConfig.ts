@@ -43,7 +43,7 @@ export const defaultSiteConfig: SiteConfig = {
     'https://n8n.srv2075779.hstgr.cloud/webhook/viyond-live-inventory',
   n8nPostBookingEndpoint:
     process.env.NEXT_PUBLIC_N8N_CREATE_BOOKING_WEBHOOK_URL ||
-    '/api/n8n/create-booking',
+    'https://n8n.srv2075779.hstgr.cloud/webhook/viyond-create-booking',
   googleMapsLocation: 'https://maps.google.com/?q=-8.6500,115.1333',
   usdExchangeRate: 15625, // Rp 1.000.000 ≈ 64 USD
   isShowcaseMode: true,

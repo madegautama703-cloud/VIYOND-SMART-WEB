@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { useCamera } from '@/hooks/use-camera';
 import {
   compressBase64Image,
   compressImageClientSide,
@@ -35,47 +34,227 @@ export function CameraCaptureModal({
   initialFacingMode = 'environment',
   onCaptureComplete,
 }: CameraCaptureModalProps) {
-  const {
-    videoRef,
-    stream,
-    error,
-    isLoading,
-    facingMode,
-    startCamera,
-    stopCamera,
-    toggleFacingMode,
-    capturePhoto,
-  } = useCamera();
-
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>(initialFacingMode);
   const [previewDataUrl, setPreviewDataUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [flashActive, setFlashActive] = useState<boolean>(false);
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // 1. Inisialisasi dan Binding Video Stream di dalam useEffect
-  useEffect(() => {
-    if (isOpen) {
-      setPreviewDataUrl(null);
-      startCamera(initialFacingMode);
-    } else {
-      stopCamera();
+  // Helper untuk menghentikan seluruh track kamera secara aman
+  const stopCameraTracks = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => {
+        try {
+          track.stop();
+        } catch {}
+      });
+      streamRef.current = null;
     }
-    return () => {
-      stopCamera();
-    };
-  }, [isOpen, initialFacingMode, startCamera, stopCamera]);
 
-  // Pastikan stream ditempelkan ke videoRef.current.srcObject saat stream aktif
+    if (videoRef.current && videoRef.current.srcObject) {
+      const activeVideoSrc = videoRef.current.srcObject as MediaStream;
+      if (activeVideoSrc && typeof activeVideoSrc.getTracks === 'function') {
+        activeVideoSrc.getTracks().forEach((track) => {
+          try {
+            track.stop();
+          } catch {}
+        });
+      }
+      videoRef.current.srcObject = null;
+    }
+
+    setStream(null);
+    setIsLoading(false);
+  };
+
+  // 1. Inisialisasi navigator.mediaDevices.getUserMedia di dalam useEffect dengan Cleanup Function
+  useEffect(() => {
+    // Jika modal tidak terbuka, pastikan seluruh track kamera dalam keadaan mati
+    if (!isOpen) {
+      stopCameraTracks();
+      return;
+    }
+
+    setPreviewDataUrl(null);
+    setIsLoading(true);
+    setError(null);
+
+    let activeStream: MediaStream | null = null;
+    let isCancelled = false;
+
+    const startCamera = async () => {
+      try {
+        if (
+          typeof navigator === 'undefined' ||
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.getUserMedia
+        ) {
+          throw new Error(
+            'Browser atau protokol ini tidak mendukung akses kamera (pastikan website dibuka melalui HTTPS atau localhost).'
+          );
+        }
+
+        let newStream: MediaStream;
+        try {
+          newStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: { ideal: facingMode },
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+            audio: false,
+          });
+        } catch (initialErr: unknown) {
+          // Fallback ke resolusi standar jika perangkat menolak ideal constraints
+          const isConstraintErr =
+            initialErr &&
+            typeof initialErr === 'object' &&
+            'name' in initialErr &&
+            ((initialErr as { name: string }).name === 'OverconstrainedError' ||
+              (initialErr as { name: string }).name === 'ConstraintNotSatisfiedError');
+
+          if (isConstraintErr) {
+            newStream = await navigator.mediaDevices.getUserMedia({
+              video: true,
+              audio: false,
+            });
+          } else {
+            throw initialErr;
+          }
+        }
+
+        // PENCEGAHAN MEMORY LEAK: Jika pengguna sudah menutup modal/pindah halaman sebelum getUserMedia selesai
+        if (isCancelled) {
+          newStream.getTracks().forEach((track) => {
+            try {
+              track.stop();
+            } catch {}
+          });
+          return;
+        }
+
+        activeStream = newStream;
+        streamRef.current = newStream;
+        setStream(newStream);
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = newStream;
+          videoRef.current.onloadedmetadata = () => {
+            if (!isCancelled) {
+              setIsLoading(false);
+              videoRef.current?.play().catch(() => {});
+            }
+          };
+          videoRef.current.play().catch(() => {});
+        }
+
+        // Safety timeout agar tidak stuck loading
+        setTimeout(() => {
+          if (!isCancelled) {
+            setIsLoading(false);
+          }
+        }, 1200);
+      } catch (err: unknown) {
+        if (isCancelled) return;
+
+        let userFriendlyMessage =
+          'Gagal mengakses kamera. Silakan pilih opsi unggah manual dari galeri file.';
+
+        if (err && typeof err === 'object' && 'name' in err) {
+          const errName = (err as { name: string }).name;
+          if (errName === 'NotAllowedError' || errName === 'PermissionDeniedError') {
+            userFriendlyMessage =
+              'Akses kamera ditolak (NotAllowedError). Mohon izinkan akses kamera di pengaturan browser Anda, atau gunakan tombol unggah manual dari galeri di bawah ini.';
+          } else if (errName === 'NotFoundError' || errName === 'DevicesNotFoundError') {
+            userFriendlyMessage =
+              'Perangkat kamera tidak ditemukan (NotFoundError). Silakan gunakan tombol unggah foto manual dari galeri.';
+          } else if (errName === 'NotReadableError' || errName === 'TrackStartError') {
+            userFriendlyMessage =
+              'Kamera sedang digunakan aplikasi lain (NotReadableError). Tutup aplikasi lain atau gunakan opsi unggah manual.';
+          } else if (
+            errName === 'OverconstrainedError' ||
+            errName === 'ConstraintNotSatisfiedError'
+          ) {
+            userFriendlyMessage =
+              'Resolusi atau mode kamera tidak didukung (OverconstrainedError). Silakan gunakan tombol unggah manual.';
+          } else if (errName === 'SecurityError') {
+            userFriendlyMessage =
+              'Akses kamera diblokir oleh kebijakan keamanan (SecurityError). Pastikan website dibuka via HTTPS atau gunakan unggah foto manual.';
+          } else if (err instanceof Error && err.message) {
+            userFriendlyMessage = `${err.message}`;
+          }
+        } else if (err instanceof Error && err.message) {
+          userFriendlyMessage = err.message;
+        }
+
+        setError(userFriendlyMessage);
+        setIsLoading(false);
+      }
+    };
+
+    startCamera();
+
+    // =========================================================================
+    // FUNGSI PEMBERSIHAN (CLEANUP FUNCTION) DI DALAM useEffect
+    // Mengambil objek stream video dan menjalankan stream.getTracks().forEach(track => track.stop())
+    // Saat komponen di-unmount, modal ditutup, atau facingMode berganti.
+    // =========================================================================
+    return () => {
+      isCancelled = true;
+
+      // 1. Matikan seluruh track pada activeStream lokal sesi ini
+      if (activeStream) {
+        activeStream.getTracks().forEach((track) => {
+          try {
+            track.stop();
+          } catch {}
+        });
+        activeStream = null;
+      }
+
+      // 2. Matikan seluruh track pada streamRef
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => {
+          try {
+            track.stop();
+          } catch {}
+        });
+        streamRef.current = null;
+      }
+
+      // 3. Putus sambungan srcObject pada videoRef
+      if (videoRef.current && videoRef.current.srcObject) {
+        const vidStream = videoRef.current.srcObject as MediaStream;
+        if (vidStream && typeof vidStream.getTracks === 'function') {
+          vidStream.getTracks().forEach((track) => {
+            try {
+              track.stop();
+            } catch {}
+          });
+        }
+        videoRef.current.srcObject = null;
+      }
+
+      setStream(null);
+      setIsLoading(false);
+    };
+  }, [isOpen, facingMode]);
+
+  // Sinkronisasi ulang srcObject ke videoRef jika elemen video ter-render ulang
   useEffect(() => {
     if (videoRef.current && stream) {
       if (videoRef.current.srcObject !== stream) {
         videoRef.current.srcObject = stream;
       }
-      videoRef.current.play().catch((playErr) => {
-        console.warn('Video auto-play prevented or interrupted:', playErr);
-      });
+      videoRef.current.play().catch(() => {});
     }
-  }, [stream, videoRef]);
+  }, [stream]);
 
   if (!isOpen) return null;
 
@@ -84,16 +263,28 @@ export function CameraCaptureModal({
     setFlashActive(true);
     setTimeout(() => setFlashActive(false), 150);
 
-    const dataUrl = capturePhoto();
+    if (!videoRef.current) return;
+    const video = videoRef.current;
+    if (video.videoWidth === 0 || video.videoHeight === 0) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
     if (dataUrl) {
       setPreviewDataUrl(dataUrl);
-      stopCamera();
+      stopCameraTracks();
     }
   };
 
   const handleRetake = () => {
     setPreviewDataUrl(null);
-    startCamera(facingMode);
+    setFacingMode((prev) => prev); // memicu re-init jika diperlukan
   };
 
   // Konfirmasi foto yang diambil dari kamera
@@ -104,17 +295,17 @@ export function CameraCaptureModal({
       const fileName = `${slotKey}_camera_${Date.now()}.jpg`;
       const compressed = await compressBase64Image(previewDataUrl, fileName);
       onCaptureComplete(slotKey, compressed);
-      stopCamera();
+      stopCameraTracks();
       onClose();
     } catch {
-      stopCamera();
+      stopCameraTracks();
       onClose();
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // 3. Fallback Manual: Upload File / Galeri jika kamera bermasalah atau pengguna ingin memilih file
+  // Fallback Manual: Upload File / Galeri jika kamera bermasalah atau pengguna ingin memilih file
   const handleManualFileSelect = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -125,7 +316,7 @@ export function CameraCaptureModal({
     try {
       const compressed = await compressImageClientSide(file);
       onCaptureComplete(slotKey, compressed);
-      stopCamera();
+      stopCameraTracks();
       onClose();
     } catch (err) {
       console.error('Failed to compress selected file:', err);
@@ -133,6 +324,15 @@ export function CameraCaptureModal({
       setIsProcessing(false);
       if (e.target) e.target.value = '';
     }
+  };
+
+  const toggleFacingMode = () => {
+    setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'));
+  };
+
+  const handleModalClose = () => {
+    stopCameraTracks();
+    onClose();
   };
 
   return (
@@ -154,10 +354,7 @@ export function CameraCaptureModal({
             <h3 className="text-sm font-bold text-white truncate">{title}</h3>
           </div>
           <button
-            onClick={() => {
-              stopCamera();
-              onClose();
-            }}
+            onClick={handleModalClose}
             className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white cursor-pointer transition-colors"
             aria-label="Tutup kamera"
           >
@@ -180,7 +377,7 @@ export function CameraCaptureModal({
               className="w-full h-full object-cover"
             />
           ) : error ? (
-            /* 2. Tampilan Error Handling yang Jelas & Tidak Stuck Loading */
+            /* Tampilan Error Handling yang Jelas & Tidak Stuck Loading */
             <div className="absolute inset-3 sm:inset-4 bg-[#0a162e]/95 border border-rose-500/40 rounded-2xl p-5 flex flex-col items-center justify-center text-center space-y-3 z-30 shadow-2xl backdrop-blur-md">
               <div className="w-14 h-14 rounded-full bg-rose-500/15 border border-rose-400/30 flex items-center justify-center text-rose-300">
                 <AlertCircle className="w-7 h-7" />
@@ -192,7 +389,7 @@ export function CameraCaptureModal({
                 {error}
               </p>
 
-              {/* 3. Tombol Fallback Manual Sangat Jelas */}
+              {/* Tombol Fallback Manual Sangat Jelas */}
               <div className="w-full pt-2 space-y-2">
                 <Button
                   variant="default"
@@ -211,7 +408,10 @@ export function CameraCaptureModal({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => startCamera(facingMode)}
+                  onClick={() => {
+                    setError(null);
+                    setFacingMode((prev) => prev);
+                  }}
                   disabled={isProcessing}
                   className="w-full text-xs text-blue-200 border-white/20 hover:bg-white/10 cursor-pointer"
                 >
@@ -222,7 +422,7 @@ export function CameraCaptureModal({
             </div>
           ) : (
             <>
-              {/* 1. Element Video Stream */}
+              {/* Element Video Stream */}
               <video
                 ref={videoRef}
                 playsInline
@@ -295,10 +495,7 @@ export function CameraCaptureModal({
               <Button
                 variant="outline"
                 className="flex-1"
-                onClick={() => {
-                  stopCamera();
-                  onClose();
-                }}
+                onClick={handleModalClose}
               >
                 Batal
               </Button>
