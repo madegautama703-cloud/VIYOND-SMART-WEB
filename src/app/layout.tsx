@@ -18,7 +18,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#02050a',
+  themeColor: '#14171F',
 };
 
 export const metadata: Metadata = {
@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}>
       <body
         suppressHydrationWarning
-        className="bg-[#02050a] text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white"
+        className="bg-[#E6E8EA] text-[#14171F] font-sans antialiased selection:bg-[#10B981] selection:text-white"
       >
         {children}
       </body>
