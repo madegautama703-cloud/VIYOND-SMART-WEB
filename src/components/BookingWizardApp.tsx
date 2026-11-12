@@ -1420,35 +1420,46 @@ export function BookingWizardApp() {
         )}
       </div>
 
-      {/* Floating Action Button: Ask AI CS (Visible on Step 1 & Step 2, hidden on Step 3 Payment) */}
+      {/* Floating Action Button: Ask CS (Direct WhatsApp button, transparent glassmorphism, hidden on Step 3) */}
       {activeStep !== 3 && (
         <div className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-40 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => setIsWaModalOpen((prev) => !prev)}
-            className="group relative flex items-center gap-2.5 rounded-full bg-[#14171F] px-4 py-2.5 text-white shadow-[0_14px_34px_rgba(20,23,31,0.28)] border border-white/15 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer touch-manipulation"
-            aria-label={t.askAiCs}
+          <a
+            href={`https://wa.me/${(siteConfig.whatsappNumber || '6281239998877').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+              lang === 'id'
+                ? `Halo ${siteConfig.brandName}, saya ingin bertanya seputar sewa motor di Bali.`
+                : `Hello ${siteConfig.brandName}, I would like to ask about scooter rental in Bali.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative flex items-center gap-2.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md px-3.5 py-2 text-white shadow-[0_12px_32px_rgba(0,0,0,0.35)] border border-white/20 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer touch-manipulation"
+            aria-label="Ask CS via WhatsApp"
           >
             {/* Pulsing emerald halo */}
-            <span className="pointer-events-none absolute -top-1 -right-1 flex h-3.5 w-3.5">
+            <span className="pointer-events-none absolute -top-0.5 -right-0.5 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75" />
-              <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#10B981] border-2 border-white" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-[#10B981] border border-black/40" />
             </span>
 
-            <span className="pointer-events-none flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#10B981] text-xs font-extrabold text-white shadow-sm">
-              AI
+            {/* WhatsApp Logo (transparent background matching button glassmorphism) */}
+            <span className="pointer-events-none flex h-6 w-6 shrink-0 items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/whatsapp-logo.png"
+                alt="WhatsApp"
+                className="h-full w-full object-contain drop-shadow-xs"
+              />
             </span>
 
             <div className="pointer-events-none text-left pr-1">
               <div className="flex items-center gap-1.5 text-xs font-bold leading-tight text-white">
-                <span>{t.askAiCs}</span>
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#10B981]" />
+                <span>Ask CS</span>
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34D399]" />
               </div>
               <div className="text-[10px] leading-tight text-white/70">
-                {t.directWhatsapp} · Online
+                WhatsApp · Online
               </div>
             </div>
-          </button>
+          </a>
         </div>
       )}
 

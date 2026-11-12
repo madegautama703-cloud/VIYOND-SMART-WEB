@@ -324,7 +324,7 @@ export const BILINGUAL_COPY = {
     submitVerifyBooking: 'Submit and Verify My Booking',
     bookingReceivedTitle: 'Booking Received!',
     openWhatsappTracking: 'Open WhatsApp Live Tracking',
-    askAiCs: 'Ask AI CS',
+    askAiCs: 'Ask CS',
     directWhatsapp: 'Chat WhatsApp',
     termsItems: [
       {
@@ -414,7 +414,7 @@ export const BILINGUAL_COPY = {
     submitVerifyBooking: 'Kirim & Verifikasi Pesanan Saya',
     bookingReceivedTitle: 'Pesanan Diterima!',
     openWhatsappTracking: 'Buka Pelacakan Live WhatsApp',
-    askAiCs: 'Tanya AI CS',
+    askAiCs: 'Tanya CS',
     directWhatsapp: 'Chat WhatsApp',
     termsItems: [
       {
