@@ -1420,6 +1420,23 @@ export function BookingWizardApp() {
         )}
       </div>
 
+      {/* Floating Transparent Watermark: Powered by Viyond */}
+      <div className="fixed bottom-24 left-4 lg:bottom-6 lg:left-6 z-40 pointer-events-auto">
+        <div
+          className="inline-flex items-center gap-2 rounded-full bg-black/40 hover:bg-black/55 backdrop-blur-md border border-white/15 px-3.5 py-1.5 text-[11px] font-medium text-white/75 shadow-[0_8px_24px_rgba(0,0,0,0.28)] transition-all duration-200 select-none"
+          aria-label="Powered by Viyond"
+        >
+          <span className="text-white/60">Powered by</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/viyond-icon.png"
+            alt="Viyond"
+            className="h-4 w-4 shrink-0 object-contain"
+          />
+          <span className="font-semibold tracking-tight text-white/95">Viyond</span>
+        </div>
+      </div>
+
       {/* Floating Action Button: Ask CS (Direct WhatsApp button, transparent glassmorphism, hidden on Step 3) */}
       {activeStep !== 3 && (
         <div className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-40 pointer-events-auto">

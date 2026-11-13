@@ -1,0 +1,451 @@
+{
+  "version": 1,
+  "historyId": "1ba776f4-b0d1-4b45-9221-0086e966ec1e",
+  "currentRevision": "1874cbf3-23d6-4c42-a811-50b9f23a54d3",
+  "pendingChanges": false,
+  "files": {
+    "AGENTS.md": {
+      "hash": "268ff46777938da818baa92a718571785e9acf2cef2d3ffbacbb93483dcba37a",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/26/268ff46777938da818baa92a718571785e9acf2cef2d3ffbacbb93483dcba37a"
+    },
+    "assets/img/Fazzio.png": {
+      "hash": "69244071f15333262d58e42eeffea9549faee6758f45ff9aae3d0f351208307a",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/69/69244071f15333262d58e42eeffea9549faee6758f45ff9aae3d0f351208307a"
+    },
+    "assets/img/NMAX.png": {
+      "hash": "7ec9da2a5d8c490b7d531c936d0227b7fdeb0d2291acfbe487c379b32455519e",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/7e/7ec9da2a5d8c490b7d531c936d0227b7fdeb0d2291acfbe487c379b32455519e"
+    },
+    "assets/img/PCX.png": {
+      "hash": "286c304dbb2163fbc112c6e570991b7df714dcd7c2bf7ebcb349998f976edd24",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/28/286c304dbb2163fbc112c6e570991b7df714dcd7c2bf7ebcb349998f976edd24"
+    },
+    "assets/img/Scoopy.png": {
+      "hash": "1b55d795f7f53523ce95b4d781d43ff8b9c3862acf353cee39374f97cde7a7e8",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/1b/1b55d795f7f53523ce95b4d781d43ff8b9c3862acf353cee39374f97cde7a7e8"
+    },
+    "assets/img/Vario.png": {
+      "hash": "dbbfbc96afbaa1f9d318b453386ddde3abaa19f23e5630f56079da4205b5897f",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/db/dbbfbc96afbaa1f9d318b453386ddde3abaa19f23e5630f56079da4205b5897f"
+    },
+    "assets/img/viyond-logo.png": {
+      "hash": "b1b8c269eb579b4f7ff90b7d54071b8a68afaf30c3522719f2f29c65f52267aa",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/b1/b1b8c269eb579b4f7ff90b7d54071b8a68afaf30c3522719f2f29c65f52267aa"
+    },
+    "assets/img/whatsapp-logo.png": {
+      "hash": "d045da2162c16e6be10bbd88229acfcfd6430ee73086f13ad2bd02990fad371a",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/d0/d045da2162c16e6be10bbd88229acfcfd6430ee73086f13ad2bd02990fad371a"
+    },
+    "assets/sfx/click_003.ogg": {
+      "hash": "2fa929138bc3a0f432696588f66eac94b8f6d463905ec8808c6461ce4b054292",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/2f/2fa929138bc3a0f432696588f66eac94b8f6d463905ec8808c6461ce4b054292"
+    },
+    "assets/sfx/drop_001.ogg": {
+      "hash": "692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/69/692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af"
+    },
+    "assets/sfx/drop_002.ogg": {
+      "hash": "4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/4a/4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218"
+    },
+    "assets/sfx/impactBell_heavy_000.ogg": {
+      "hash": "94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/94/94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f"
+    },
+    "assets/sfx/impactSoft_medium_001.ogg": {
+      "hash": "7642a4fd43e547afe4f7adfadb3dabb681c0ff512f52c1674bae30a726841faf",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/76/7642a4fd43e547afe4f7adfadb3dabb681c0ff512f52c1674bae30a726841faf"
+    },
+    "assets/sfx/impactSoft_medium_002.ogg": {
+      "hash": "5069e3571a77d7f7aae9ef71d0364aa245fb7d64a7c8cc9956f221d03088c089",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/50/5069e3571a77d7f7aae9ef71d0364aa245fb7d64a7c8cc9956f221d03088c089"
+    },
+    "assets/sfx/impactSoft_medium_004.ogg": {
+      "hash": "b0a4dea90eed47accf50b768beff1166f2f1486fb139e4d025b2427637624bca",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/b0/b0a4dea90eed47accf50b768beff1166f2f1486fb139e4d025b2427637624bca"
+    },
+    "hyperframes.json": {
+      "hash": "53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/53/53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
+    },
+    "index.html": {
+      "hash": "d8bd4ec8a4b22a6fc637dc7af97d353cb015d208eb58332a265c59c4c2a178fa",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/d8/d8bd4ec8a4b22a6fc637dc7af97d353cb015d208eb58332a265c59c4c2a178fa"
+    },
+    "meta.json": {
+      "hash": "61aa57711cb4265f84a4ad2a8bef1c1319913741a82aa09558f2d3522f3d4dc1",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/61/61aa57711cb4265f84a4ad2a8bef1c1319913741a82aa09558f2d3522f3d4dc1"
+    },
+    "package.json": {
+      "hash": "42c82c838e4bd9a7cf8a228a6fa56c0f22031b2849113276cb18dbdde21d0ee6",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/42/42c82c838e4bd9a7cf8a228a6fa56c0f22031b2849113276cb18dbdde21d0ee6"
+    },
+    "assets/music/happy-beats-business-moves-vol-11-by-ende-dot-app.mp3": {
+      "hash": "364a546834db4c0c2e3b3240eb6df03e98b7362230154b04c5c614442f6660d7",
+      "content": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/36/364a546834db4c0c2e3b3240eb6df03e98b7362230154b04c5c614442f6660d7"
+    }
+  },
+  "revisions": {
+    "dd458f5d-b775-4912-9350-00f6fbc796fa": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1794552497464,
+      "endedAt": 1794552497465,
+      "files": {
+        "index.html": {
+          "before": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/1d/1d95fa243135b24c1e8f2d78c6dc5d3ea10007bea57a51abcbbbec9099a397d2",
+          "after": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/59/594825ef631d67ac2873548fa78ba65a87f514b9f8423c06a888734b666a1572"
+        }
+      }
+    },
+    "1874cbf3-23d6-4c42-a811-50b9f23a54d3": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1794552974092,
+      "endedAt": 1794552974093,
+      "files": {
+        "index.html": {
+          "before": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/59/594825ef631d67ac2873548fa78ba65a87f514b9f8423c06a888734b666a1572",
+          "after": "/Users/madepasekmaesagautama/.cache/hyperframes/history/1ba776f4-b0d1-4b45-9221-0086e966ec1e/blobs/d8/d8bd4ec8a4b22a6fc637dc7af97d353cb015d208eb58332a265c59c4c2a178fa"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "1874cbf3-23d6-4c42-a811-50b9f23a54d3",
+      "id": "ff684694-f828-4c46-9de8-e5ea6e7722ce"
+    },
+    "revisions": {
+      "dd458f5d-b775-4912-9350-00f6fbc796fa": [
+        {
+          "id": "4f14d86d-ff67-425c-8d62-1494c0de4e4d",
+          "scope": "project",
+          "report": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/composition/.hyperframes/artifacts/checks/4f14d86d-ff67-425c-8d62-1494c0de4e4d.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 45000,
+              "cache": true,
+              "contrast": true,
+              "craft": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto",
+              "includeUnmounted": false
+            }
+          },
+          "createdAt": 1794552502305,
+          "contentHash": "6ab954b95d28ecfaa4c5e03138b04c8e15aa77bfb313680efad45233daf25f32",
+          "revision": "dd458f5d-b775-4912-9350-00f6fbc796fa",
+          "inputFingerprint": "5ae90a6ea8b84dffee38927c264aee80872175a0d66001c851f2926c2cac15df",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "1874cbf3-23d6-4c42-a811-50b9f23a54d3": [
+        {
+          "id": "ff684694-f828-4c46-9de8-e5ea6e7722ce",
+          "scope": "project",
+          "report": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/composition/.hyperframes/artifacts/checks/ff684694-f828-4c46-9de8-e5ea6e7722ce.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 45000,
+              "cache": true,
+              "contrast": true,
+              "craft": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto",
+              "includeUnmounted": false
+            }
+          },
+          "createdAt": 1794552979019,
+          "contentHash": "20c39a5122a8893675aa7fd662f72afa5aea51d28ecaa0bee87024a4f4fe8f72",
+          "revision": "1874cbf3-23d6-4c42-a811-50b9f23a54d3",
+          "inputFingerprint": "d291e8fbde7d91e243d1c1037eaaf3ca4797af5cf4c0d97db0c95a2153de9c82",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "d27e8275-f031-4375-a8c4-d237553a3625",
+        "scope": "project",
+        "report": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/composition/.hyperframes/artifacts/checks/d27e8275-f031-4375-a8c4-d237553a3625.json",
+        "metadata": {
+          "ok": false,
+          "browserSkipped": false,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 45000,
+            "cache": true,
+            "contrast": true,
+            "craft": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto",
+            "includeUnmounted": false
+          }
+        },
+        "createdAt": 1794552437779,
+        "contentHash": "a1548b2e0c511746259662ec97f0cb9d41ea28dacedebb1d4d4741004f0734f3",
+        "revision": null,
+        "inputFingerprint": "5d9391d7fa8d9c33392eb6765a23306eb9d2715bfe54967ab6e39d0bb5b9093f",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": {
+      "revision": "1874cbf3-23d6-4c42-a811-50b9f23a54d3",
+      "id": "69c0eefe-163a-49c2-9887-95318149b38d-3"
+    },
+    "revisions": {
+      "dd458f5d-b775-4912-9350-00f6fbc796fa": [
+        {
+          "scope": "full",
+          "id": "05e6c013-bfc0-48d7-834b-875ab8f78f58-0",
+          "image": "/Users/madepasekmaesagautama/.gemini/antigravity/brain/44de1eec-4f5c-4b73-9346-7261e4f05045/scratch/snaps/frame-00-at-11s.png",
+          "time": 11,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1794552886681,
+          "contentHash": "50c92166ea5451b551c086421f8d6a099d6ac435f8cc33dc37e3214219f29ee6",
+          "revision": "dd458f5d-b775-4912-9350-00f6fbc796fa",
+          "inputFingerprint": "5ae90a6ea8b84dffee38927c264aee80872175a0d66001c851f2926c2cac15df",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "05e6c013-bfc0-48d7-834b-875ab8f78f58-1",
+          "image": "/Users/madepasekmaesagautama/.gemini/antigravity/brain/44de1eec-4f5c-4b73-9346-7261e4f05045/scratch/snaps/frame-01-at-12.8s.png",
+          "time": 12.8,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1794552886681,
+          "contentHash": "e732ecdc9b379b6626da65d7077c5bfc2a2d8470c97dbac4e16ff6b6e08888d6",
+          "revision": "dd458f5d-b775-4912-9350-00f6fbc796fa",
+          "inputFingerprint": "5ae90a6ea8b84dffee38927c264aee80872175a0d66001c851f2926c2cac15df",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "05e6c013-bfc0-48d7-834b-875ab8f78f58-2",
+          "image": "/Users/madepasekmaesagautama/.gemini/antigravity/brain/44de1eec-4f5c-4b73-9346-7261e4f05045/scratch/snaps/frame-02-at-15.3s.png",
+          "time": 15.3,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1794552886681,
+          "contentHash": "84908b0774995b65447a14260a5a69e315a22de729e1f2574d1b0385fd398a1c",
+          "revision": "dd458f5d-b775-4912-9350-00f6fbc796fa",
+          "inputFingerprint": "5ae90a6ea8b84dffee38927c264aee80872175a0d66001c851f2926c2cac15df",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "05e6c013-bfc0-48d7-834b-875ab8f78f58-3",
+          "image": "/Users/madepasekmaesagautama/.gemini/antigravity/brain/44de1eec-4f5c-4b73-9346-7261e4f05045/scratch/snaps/frame-03-at-17.2s.png",
+          "time": 17.2,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1794552886681,
+          "contentHash": "e758d8957ff95bb4fe8bbcaf18252a6225ffedb011a8c408f52317f1f9707bff",
+          "revision": "dd458f5d-b775-4912-9350-00f6fbc796fa",
+          "inputFingerprint": "5ae90a6ea8b84dffee38927c264aee80872175a0d66001c851f2926c2cac15df",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "05e6c013-bfc0-48d7-834b-875ab8f78f58-4",
+          "image": "/Users/madepasekmaesagautama/.gemini/antigravity/brain/44de1eec-4f5c-4b73-9346-7261e4f05045/scratch/snaps/frame-04-at-19.5s.png",
+          "time": 19.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1794552886681,
+          "contentHash": "b70ed8cabd08b91ec5f48599b2492119c713e1934afcb4375facfb33a5462f79",
+          "revision": "dd458f5d-b775-4912-9350-00f6fbc796fa",
+          "inputFingerprint": "5ae90a6ea8b84dffee38927c264aee80872175a0d66001c851f2926c2cac15df",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "05e6c013-bfc0-48d7-834b-875ab8f78f58-5",
+          "image": "/Users/madepasekmaesagautama/.gemini/antigravity/brain/44de1eec-4f5c-4b73-9346-7261e4f05045/scratch/snaps/frame-05-at-24.25s.png",
+          "time": 24.25,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1794552886681,
+          "contentHash": "c63b30732f5e2a23010500ce6d979396fd1e210f245a83fe3dd91be64ec15eb9",
+          "revision": "dd458f5d-b775-4912-9350-00f6fbc796fa",
+          "inputFingerprint": "5ae90a6ea8b84dffee38927c264aee80872175a0d66001c851f2926c2cac15df",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "1874cbf3-23d6-4c42-a811-50b9f23a54d3": [
+        {
+          "scope": "full",
+          "id": "69c0eefe-163a-49c2-9887-95318149b38d-0",
+          "image": "/Users/madepasekmaesagautama/.gemini/antigravity/brain/44de1eec-4f5c-4b73-9346-7261e4f05045/scratch/snaps-v2/frame-00-at-7.5s.png",
+          "time": 7.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1794552982559,
+          "contentHash": "14f815cad21fd7fb15c312a532b4bf043516b882bd3f81ef25cfb1fa7399d1f9",
+          "revision": "1874cbf3-23d6-4c42-a811-50b9f23a54d3",
+          "inputFingerprint": "d291e8fbde7d91e243d1c1037eaaf3ca4797af5cf4c0d97db0c95a2153de9c82",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "69c0eefe-163a-49c2-9887-95318149b38d-1",
+          "image": "/Users/madepasekmaesagautama/.gemini/antigravity/brain/44de1eec-4f5c-4b73-9346-7261e4f05045/scratch/snaps-v2/frame-01-at-12.8s.png",
+          "time": 12.8,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1794552982559,
+          "contentHash": "51cca0f3f016a5d9f81f273b74771a5a0b5b70157fc371766a1d6fc6d9799075",
+          "revision": "1874cbf3-23d6-4c42-a811-50b9f23a54d3",
+          "inputFingerprint": "d291e8fbde7d91e243d1c1037eaaf3ca4797af5cf4c0d97db0c95a2153de9c82",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "69c0eefe-163a-49c2-9887-95318149b38d-2",
+          "image": "/Users/madepasekmaesagautama/.gemini/antigravity/brain/44de1eec-4f5c-4b73-9346-7261e4f05045/scratch/snaps-v2/frame-02-at-15.3s.png",
+          "time": 15.3,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1794552982559,
+          "contentHash": "2db6227d55cc65ef7a585f1996acd7a60b8ac71ec97c03546f27f593f7afd3b5",
+          "revision": "1874cbf3-23d6-4c42-a811-50b9f23a54d3",
+          "inputFingerprint": "d291e8fbde7d91e243d1c1037eaaf3ca4797af5cf4c0d97db0c95a2153de9c82",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "69c0eefe-163a-49c2-9887-95318149b38d-3",
+          "image": "/Users/madepasekmaesagautama/.gemini/antigravity/brain/44de1eec-4f5c-4b73-9346-7261e4f05045/scratch/snaps-v2/frame-03-at-24.25s.png",
+          "time": 24.25,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1794552982559,
+          "contentHash": "c63b30732f5e2a23010500ce6d979396fd1e210f245a83fe3dd91be64ec15eb9",
+          "revision": "1874cbf3-23d6-4c42-a811-50b9f23a54d3",
+          "inputFingerprint": "d291e8fbde7d91e243d1c1037eaaf3ca4797af5cf4c0d97db0c95a2153de9c82",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "125ba6b7-03da-4bf6-8a8c-7fcb055548e9",
+      "completedAt": 1794553045498,
+      "output": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/brag.mp4",
+      "status": "completed",
+      "revision": "1874cbf3-23d6-4c42-a811-50b9f23a54d3"
+    },
+    "retainedRevisions": [
+      "1874cbf3-23d6-4c42-a811-50b9f23a54d3",
+      "dd458f5d-b775-4912-9350-00f6fbc796fa"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}

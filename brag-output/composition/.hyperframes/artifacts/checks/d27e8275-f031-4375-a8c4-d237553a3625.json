@@ -1,0 +1,1648 @@
+{
+  "ok": false,
+  "strict": false,
+  "browserSkipped": false,
+  "lint": {
+    "ok": false,
+    "errorCount": 1,
+    "warningCount": 6,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "duplicate_media_discovery_risk",
+        "severity": "warning",
+        "message": "Detected 2 matching img entries with the same source/start/duration.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Avoid duplicated media nodes that can be discovered twice during compilation."
+      },
+      {
+        "code": "font_family_without_font_face",
+        "severity": "error",
+        "message": "Font family used without @font-face declaration: plus jakarta sans. These are not in the auto-resolved font list, so the renderer cannot supply them automatically. Text will fall back to a generic font, producing incorrect typography in the video.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Add @font-face { font-family: '...'; src: url('capture/assets/fonts/...woff2'); } for each font family, pointing to the captured .woff2 files, or switch to a Google Fonts family. An OS font such as PingFang SC or Hiragino Sans renders locally from the installed copy, but a cloud render has no copy and refuses it."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"s1\"> is a timeline element that contains nested <div id=\"s1a1\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#s1",
+        "dataAttributes": {},
+        "sourceFile": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"s1\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"s2\"> is a timeline element that contains nested <div id=\"s2cap\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#s2",
+        "dataAttributes": {},
+        "sourceFile": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"s2\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"s3\"> is a timeline element that contains nested <div id=\"s3cap\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#s3",
+        "dataAttributes": {},
+        "sourceFile": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"s3\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"s4\"> is a timeline element that contains nested <div id=\"s4cap\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#s4",
+        "dataAttributes": {},
+        "sourceFile": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"s4\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"s5\"> is a timeline element that contains nested <div id=\"s5a1\">. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#s5",
+        "dataAttributes": {},
+        "sourceFile": "/Users/madepasekmaesagautama/antigravity/VIYOND-Smart-Web-Booking-Engine/brag-output/composition/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"s5\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      }
+    ],
+    "filesScanned": 1
+  },
+  "runtime": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 15,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx1\" is 0.11s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.11s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx2\" is 0.19s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.19s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx3\" is 0.18s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.18s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx4\" is 0.11s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.11s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx5\" is 0.19s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.19s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx6\" is 0.01s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.01s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx7\" is 0.01s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.01s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx8\" is 0.01s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.01s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx9\" is 0.01s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.01s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx11\" is 0.01s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.01s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx12\" is 0.14s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.14s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx13\" is 0.19s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.19s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx14\" is 0.11s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.11s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx15\" is 0.18s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.18s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      },
+      {
+        "code": "clip_media_fit",
+        "severity": "warning",
+        "message": "Audio \"sx16\" is 0.15s but its slot (data-duration) is 1.00s — the slot is shortened to the media length when rendered. Set data-duration to ~0.15s if that isn't intended.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {
+          "data-composition-id": "main",
+          "data-start": "0",
+          "data-duration": "23",
+          "data-width": "1080",
+          "data-height": "1920"
+        },
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 1080,
+          "height": 1920
+        },
+        "time": 0
+      }
+    ]
+  },
+  "layout": {
+    "ok": false,
+    "errorCount": 2,
+    "warningCount": 0,
+    "infoCount": 21,
+    "findings": [
+      {
+        "code": "content_overlap",
+        "severity": "error",
+        "time": 16.611,
+        "selector": "#p2 > div:nth-of-type(1)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 208,
+          "top": 935,
+          "right": 747.75,
+          "bottom": 1035.03,
+          "width": 539.75,
+          "height": 100.03
+        },
+        "containerSelector": "div.h",
+        "text": "Transfer Bank Manual (Bank Lokal)",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 208,
+          "y": 935,
+          "width": 539.75,
+          "height": 100.03
+        },
+        "firstSeen": 15.933,
+        "lastSeen": 18.246,
+        "occurrences": 20,
+        "heldMs": 2312.9999999999986,
+        "times": [
+          15.933,
+          16.061,
+          16.19,
+          16.318,
+          16.447,
+          16.575,
+          16.611,
+          16.704,
+          16.832,
+          16.961,
+          17.089,
+          17.218,
+          17.346,
+          17.475,
+          17.603,
+          17.732,
+          17.86,
+          17.989,
+          18.117,
+          18.246
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "error",
+        "time": 16.611,
+        "selector": "#p2 > div:nth-of-type(2)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 208,
+          "top": 1048.06,
+          "right": 831.39,
+          "bottom": 1086.06,
+          "width": 623.39,
+          "height": 38
+        },
+        "containerSelector": "div.p",
+        "text": "BCA / Mandiri / BNI — Unggah bukti transfer",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 208,
+          "y": 1048.06,
+          "width": 623.39,
+          "height": 38
+        },
+        "firstSeen": 15.933,
+        "lastSeen": 18.246,
+        "occurrences": 20,
+        "heldMs": 2312.9999999999986,
+        "times": [
+          15.933,
+          16.061,
+          16.19,
+          16.318,
+          16.447,
+          16.575,
+          16.611,
+          16.704,
+          16.832,
+          16.961,
+          17.089,
+          17.218,
+          17.346,
+          17.475,
+          17.603,
+          17.732,
+          17.86,
+          17.989,
+          18.117,
+          18.246
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 1.278,
+        "selector": "#s1a1",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 132.54,
+          "top": 1012.54,
+          "right": 1207.46,
+          "bottom": 2087.46,
+          "width": 1074.92,
+          "height": 1074.92
+        },
+        "containerSelector": "#s1",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 0,
+          "top": 0,
+          "right": 1080,
+          "bottom": 1920,
+          "width": 1080,
+          "height": 1920
+        },
+        "overflow": {
+          "right": 127.46,
+          "bottom": 167.46
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 132.54,
+          "y": 1012.54,
+          "width": 1074.92,
+          "height": 1074.92
+        },
+        "firstSeen": 1.278,
+        "lastSeen": 3.833,
+        "occurrences": 2,
+        "heldMs": 0,
+        "times": [
+          1.278,
+          3.833
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 1.278,
+        "selector": "#s1a2",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": -382.93,
+          "top": -300,
+          "right": 617.07,
+          "bottom": 700,
+          "width": 1000,
+          "height": 1000
+        },
+        "containerSelector": "#s1",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 0,
+          "top": 0,
+          "right": 1080,
+          "bottom": 1920,
+          "width": 1080,
+          "height": 1920
+        },
+        "overflow": {
+          "left": 382.93,
+          "top": 300
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": -382.93,
+          "y": -300,
+          "width": 1000,
+          "height": 1000
+        },
+        "firstSeen": 1.278,
+        "lastSeen": 3.833,
+        "occurrences": 2,
+        "heldMs": 0,
+        "times": [
+          1.278,
+          3.833
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 3.833,
+        "selector": "#s1pill",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 116,
+          "top": 250,
+          "right": 882.63,
+          "bottom": 288,
+          "width": 766.63,
+          "height": 38
+        },
+        "containerSelector": "#s2",
+        "text": "Smart Web Scooter Booking Engine · Bali Showroom",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.56,
+        "lifetime": {
+          "start": 0,
+          "end": 4.1
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 116,
+          "y": 250,
+          "width": 766.63,
+          "height": 38
+        },
+        "firstSeen": 3.833,
+        "lastSeen": 3.833,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          3.833
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 3.833,
+        "selector": "#s1l1",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 80,
+          "top": 412,
+          "right": 963.58,
+          "bottom": 527,
+          "width": 883.58,
+          "height": 115
+        },
+        "containerSelector": "#s2",
+        "text": "Sewa Motor di Bali —",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.56,
+        "lifetime": {
+          "start": 0,
+          "end": 4.1
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 80,
+          "y": 412,
+          "width": 883.58,
+          "height": 115
+        },
+        "firstSeen": 3.833,
+        "lastSeen": 3.833,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          3.833
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 3.833,
+        "selector": "#s1l2 > em:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 80,
+          "top": 632,
+          "right": 760.81,
+          "bottom": 846.36,
+          "width": 680.81,
+          "height": 214.36
+        },
+        "containerSelector": "#s2",
+        "text": "Verifikasi Online Instan",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.28,
+        "lifetime": {
+          "start": 0,
+          "end": 4.1
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 80,
+          "y": 632,
+          "width": 680.81,
+          "height": 214.36
+        },
+        "firstSeen": 3.833,
+        "lastSeen": 3.833,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          3.833
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 3.833,
+        "selector": "#s1l3",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 80,
+          "top": 852,
+          "right": 789.33,
+          "bottom": 1066.36,
+          "width": 709.33,
+          "height": 214.36
+        },
+        "containerSelector": "#s2",
+        "text": "& Gratis Antar ke Hotel.",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.28,
+        "lifetime": {
+          "start": 0,
+          "end": 4.1
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 80,
+          "y": 852,
+          "width": 709.33,
+          "height": 214.36
+        },
+        "firstSeen": 3.833,
+        "lastSeen": 3.833,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          3.833
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 8.866,
+        "selector": "#s2cap",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 80,
+          "top": 103,
+          "right": 379.22,
+          "bottom": 199,
+          "width": 299.22,
+          "height": 96
+        },
+        "containerSelector": "#s3cap",
+        "text": "Pilih unit armada live",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 80,
+          "y": 103,
+          "width": 299.22,
+          "height": 96
+        },
+        "firstSeen": 8.866,
+        "lastSeen": 8.866,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          8.866
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 8.866,
+        "selector": "#s2cap > em:nth-of-type(1)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 379.22,
+          "top": 103,
+          "right": 781.27,
+          "bottom": 199,
+          "width": 402.05,
+          "height": 96
+        },
+        "containerSelector": "#s3cap",
+        "text": "armada live",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 379.22,
+          "y": 103,
+          "width": 402.05,
+          "height": 96
+        },
+        "firstSeen": 8.866,
+        "lastSeen": 8.866,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          8.866
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 11.5,
+        "selector": "#d3 > div:nth-of-type(1)",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 856.8,
+          "top": 1106,
+          "right": 976.8,
+          "bottom": 1356,
+          "width": 120,
+          "height": 250
+        },
+        "containerSelector": "#d3",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 164,
+          "top": 1102,
+          "right": 920,
+          "bottom": 1352,
+          "width": 756,
+          "height": 250
+        },
+        "overflow": {
+          "right": 56.8,
+          "bottom": 4
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 856.8,
+          "y": 1106,
+          "width": 120,
+          "height": 250
+        },
+        "firstSeen": 11.5,
+        "lastSeen": 11.5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.5
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 11.5,
+        "selector": "#d4 > div:nth-of-type(1)",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 38,
+          "top": 1380,
+          "right": 158,
+          "bottom": 1630,
+          "width": 120,
+          "height": 250
+        },
+        "containerSelector": "#d4",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 164,
+          "top": 1376,
+          "right": 920,
+          "bottom": 1626,
+          "width": 756,
+          "height": 250
+        },
+        "overflow": {
+          "left": 126,
+          "bottom": 4
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 38,
+          "y": 1380,
+          "width": 120,
+          "height": 250
+        },
+        "firstSeen": 11.5,
+        "lastSeen": 11.5,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.5
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 11.693,
+        "selector": "#d3 > div:nth-of-type(4)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 302,
+          "top": 1282,
+          "right": 446.98,
+          "bottom": 1317,
+          "width": 144.98,
+          "height": 35
+        },
+        "containerSelector": "#d3 > div:nth-of-type(5)",
+        "text": "Menunggu",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 302,
+          "y": 1282,
+          "width": 144.98,
+          "height": 35
+        },
+        "firstSeen": 11.693,
+        "lastSeen": 11.693,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.693
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 12.721,
+        "selector": "#d4 > div:nth-of-type(4)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 302,
+          "top": 1556,
+          "right": 446.98,
+          "bottom": 1591,
+          "width": 144.98,
+          "height": 35
+        },
+        "containerSelector": "#d4 > div:nth-of-type(5)",
+        "text": "Menunggu",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 302,
+          "y": 1556,
+          "width": 144.98,
+          "height": 35
+        },
+        "firstSeen": 12.721,
+        "lastSeen": 12.721,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          12.721
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 16.611,
+        "selector": "#s4ph > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 164,
+          "top": 464.5,
+          "right": 642.61,
+          "bottom": 515.5,
+          "width": 478.61,
+          "height": 51
+        },
+        "containerSelector": "#succ",
+        "text": "Pilih Metode Pembayaran",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "lifetime": {
+          "start": 13.18,
+          "end": 18.31
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 164,
+          "y": 464.5,
+          "width": 478.61,
+          "height": 51
+        },
+        "firstSeen": 16.611,
+        "lastSeen": 16.611,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          16.611
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 16.611,
+        "selector": "#p1 > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 208,
+          "top": 595,
+          "right": 722.47,
+          "bottom": 648,
+          "width": 514.47,
+          "height": 53
+        },
+        "containerSelector": "#succ",
+        "text": "Pembayaran Online Instan",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "lifetime": {
+          "start": 13.18,
+          "end": 18.31
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 208,
+          "y": 595,
+          "width": 514.47,
+          "height": 53
+        },
+        "firstSeen": 16.611,
+        "lastSeen": 16.611,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          16.611
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 16.611,
+        "selector": "#p1 > div:nth-of-type(2)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 208,
+          "top": 661.03,
+          "right": 804.98,
+          "bottom": 699.03,
+          "width": 596.98,
+          "height": 38
+        },
+        "containerSelector": "#succ",
+        "text": "Visa / Mastercard / QRIS / Virtual Account",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "lifetime": {
+          "start": 13.18,
+          "end": 18.31
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 208,
+          "y": 661.03,
+          "width": 596.98,
+          "height": 38
+        },
+        "firstSeen": 16.611,
+        "lastSeen": 16.611,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          16.611
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 16.611,
+        "selector": "#p2 > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 208,
+          "top": 935,
+          "right": 747.75,
+          "bottom": 1035.03,
+          "width": 539.75,
+          "height": 100.03
+        },
+        "containerSelector": "#succ",
+        "text": "Transfer Bank Manual (Bank Lokal)",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "lifetime": {
+          "start": 13.18,
+          "end": 18.31
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 208,
+          "y": 935,
+          "width": 539.75,
+          "height": 100.03
+        },
+        "firstSeen": 16.611,
+        "lastSeen": 16.611,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          16.611
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 16.611,
+        "selector": "#p2 > div:nth-of-type(2)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 208,
+          "top": 1048.06,
+          "right": 831.39,
+          "bottom": 1086.06,
+          "width": 623.39,
+          "height": 38
+        },
+        "containerSelector": "#succ",
+        "text": "BCA / Mandiri / BNI — Unggah bukti transfer",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "lifetime": {
+          "start": 13.18,
+          "end": 18.31
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 208,
+          "y": 1048.06,
+          "width": 623.39,
+          "height": 38
+        },
+        "firstSeen": 16.611,
+        "lastSeen": 16.611,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          16.611
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 16.611,
+        "selector": "#p3 > div:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 208,
+          "top": 1275,
+          "right": 875.81,
+          "bottom": 1328,
+          "width": 667.81,
+          "height": 53
+        },
+        "containerSelector": "#succ",
+        "text": "Cash on Delivery (Bayar Saat Tiba)",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "lifetime": {
+          "start": 13.18,
+          "end": 18.31
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 208,
+          "y": 1275,
+          "width": 667.81,
+          "height": 53
+        },
+        "firstSeen": 16.611,
+        "lastSeen": 16.611,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          16.611
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "info",
+        "time": 16.611,
+        "selector": "#p3 > div:nth-of-type(2)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 208,
+          "top": 1341.03,
+          "right": 823.58,
+          "bottom": 1379.03,
+          "width": 615.58,
+          "height": 38
+        },
+        "containerSelector": "#succ",
+        "text": "Bayar tunai ke kurir saat motor tiba di hotel.",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "lifetime": {
+          "start": 13.18,
+          "end": 18.31
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 208,
+          "y": 1341.03,
+          "width": 615.58,
+          "height": 38
+        },
+        "firstSeen": 16.611,
+        "lastSeen": 16.611,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          16.611
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 19.167,
+        "selector": "#s5a1",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": 134.35,
+          "top": 1014.35,
+          "right": 1205.65,
+          "bottom": 2085.65,
+          "width": 1071.29,
+          "height": 1071.29
+        },
+        "containerSelector": "#s5",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 0,
+          "top": 0,
+          "right": 1080,
+          "bottom": 1920,
+          "width": 1080,
+          "height": 1920
+        },
+        "overflow": {
+          "right": 125.65,
+          "bottom": 165.65
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 134.35,
+          "y": 1014.35,
+          "width": 1071.29,
+          "height": 1071.29
+        },
+        "firstSeen": 19.167,
+        "lastSeen": 21.722,
+        "occurrences": 2,
+        "heldMs": 0,
+        "times": [
+          19.167,
+          21.722
+        ]
+      },
+      {
+        "code": "container_overflow",
+        "severity": "info",
+        "time": 19.167,
+        "selector": "#s5a2",
+        "message": "Element extends outside a clipping layout container.",
+        "rect": {
+          "left": -385.5,
+          "top": -300,
+          "right": 614.5,
+          "bottom": 700,
+          "width": 1000,
+          "height": 1000
+        },
+        "containerSelector": "#s5",
+        "fixHint": "Resize/reposition the child or container, or mark intentional overflow with data-layout-allow-overflow.",
+        "containerRect": {
+          "left": 0,
+          "top": 0,
+          "right": 1080,
+          "bottom": 1920,
+          "width": 1080,
+          "height": 1920
+        },
+        "overflow": {
+          "left": 385.5,
+          "top": 300
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": -385.5,
+          "y": -300,
+          "width": 1000,
+          "height": 1000
+        },
+        "firstSeen": 19.167,
+        "lastSeen": 21.722,
+        "occurrences": 2,
+        "heldMs": 0,
+        "times": [
+          19.167,
+          21.722
+        ]
+      }
+    ],
+    "duration": 23,
+    "samples": [
+      1.278,
+      3.833,
+      6.389,
+      8.944,
+      11.5,
+      14.056,
+      16.611,
+      19.167,
+      21.722
+    ],
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "tolerance": 2,
+    "totalIssueCount": 23,
+    "truncated": false
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
+  },
+  "contrast": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": true,
+    "samples": [
+      1.278,
+      6.389,
+      11.5,
+      16.611,
+      21.722
+    ],
+    "checked": 48,
+    "passed": 48
+  },
+  "craft": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 4,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "first_frame_empty",
+        "severity": "warning",
+        "message": "Frame 0 shows only the background, and the first frame is the thumbnail on social players: have the title or key image already on screen at 0 s instead of entering from nothing; see references/review.md.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0
+      },
+      {
+        "code": "text_below_floor",
+        "severity": "warning",
+        "message": "Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and \"Dipilih ✓\" renders at 26 px for 1.38 s: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.",
+        "text": "Dipilih ✓",
+        "selector": "#c2sel",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 757.06,
+          "y": 892,
+          "width": 106.94,
+          "height": 33
+        },
+        "time": 7.5,
+        "times": [
+          7.5
+        ],
+        "fontPx": 26,
+        "floorPx": 28,
+        "seconds": 1.375,
+        "elements": [
+          {
+            "selector": "#c2sel",
+            "text": "Dipilih ✓",
+            "fontPx": 26,
+            "time": 7.5,
+            "seconds": 1.375
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "The film's last line \"Smart Web Scooter Booking Engine · Bali Verifikasi Online...\" (13 words) is on screen 1.90 s (±0.01 s), under the 3.30 s a closing line needs: hold it about 0.5 s + 0.3 s a word and at least 2 s before the film ends; see references/motion.md.",
+        "text": "Smart Web Scooter Booking Engine · Bali Verifikasi Online Instan & Gratis Antar ke Hotel",
+        "selector": "#s5tag",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 85.81,
+          "y": 1145.38,
+          "width": 908.3800000000001,
+          "height": 58
+        },
+        "time": 21.102,
+        "words": 13,
+        "seconds": 1.902,
+        "floorSeconds": 3.3,
+        "measured": [
+          {
+            "time": 20.75,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 20.875,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 21,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 21.125,
+            "opacity": 0.59,
+            "heightPx": 58
+          },
+          {
+            "time": 21.25,
+            "opacity": 0.92,
+            "heightPx": 58
+          },
+          {
+            "time": 21.375,
+            "opacity": 0.99,
+            "heightPx": 58
+          },
+          {
+            "time": 21.5,
+            "opacity": 1,
+            "heightPx": 58
+          },
+          {
+            "time": 22.5,
+            "opacity": 1,
+            "heightPx": 58
+          },
+          {
+            "time": 22.625,
+            "opacity": 1,
+            "heightPx": 58
+          },
+          {
+            "time": 22.75,
+            "opacity": 1,
+            "heightPx": 58
+          },
+          {
+            "time": 22.875,
+            "opacity": 1,
+            "heightPx": 58
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "The film's last line \"Verifikasi Online Instan & Gratis Antar ke Hotel\" (7 words) is on screen 1.90 s (±0.01 s), under the 2.00 s a closing line needs: hold it about 0.5 s + 0.3 s a word and at least 2 s before the film ends; see references/motion.md.",
+        "text": "Verifikasi Online Instan & Gratis Antar ke Hotel",
+        "selector": "#s5tag > small:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 191.77,
+          "y": 1219.88,
+          "width": 696.46,
+          "height": 40
+        },
+        "time": 21.102,
+        "words": 7,
+        "seconds": 1.902,
+        "floorSeconds": 2,
+        "measured": [
+          {
+            "time": 20.75,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 20.875,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 21,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 21.125,
+            "opacity": 0.59,
+            "heightPx": 40
+          },
+          {
+            "time": 21.25,
+            "opacity": 0.92,
+            "heightPx": 40
+          },
+          {
+            "time": 21.375,
+            "opacity": 0.99,
+            "heightPx": 40
+          },
+          {
+            "time": 21.5,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 22.5,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 22.625,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 22.75,
+            "opacity": 1,
+            "heightPx": 40
+          },
+          {
+            "time": 22.875,
+            "opacity": 1,
+            "heightPx": 40
+          }
+        ]
+      }
+    ],
+    "enabled": true,
+    "step": 0.125,
+    "samples": 184
+  },
+  "audio": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  }
+}

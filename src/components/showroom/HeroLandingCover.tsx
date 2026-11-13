@@ -168,16 +168,16 @@ export function GlobalStickyHeader({ vm }: { vm: ShowroomViewModel }) {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="flex items-center gap-3 text-left cursor-pointer group"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#064E3B] shadow-sm transition-transform group-hover:scale-105">
-            <span className="text-sm font-black tracking-tighter">V</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[15px] font-bold tracking-tight">{siteConfig.brandName}</span>
-            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/90">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#34D399]" />
-              {totalReadyUnits} {lang === 'id' ? 'Unit Ready' : 'Units Live'}
-            </span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={siteConfig.logoUrl || '/your-brand-white.png'}
+            alt={siteConfig.brandName}
+            className="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105"
+          />
+          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/90">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#34D399]" />
+            {totalReadyUnits} {lang === 'id' ? 'Unit Ready' : 'Units Live'}
+          </span>
         </button>
 
         <div className="flex items-center gap-2.5">

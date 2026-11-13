@@ -22,18 +22,18 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'VIYOND — Smart Web Scooter Booking Engine (Bali)',
+  title: 'YOUR BRAND — Smart Web Scooter Booking Engine (Bali)',
   description:
     'Rent a scooter in Bali with instant online KYC verification, live fleet inventory sync, automatic zone delivery calculator, and free hotel delivery.',
   openGraph: {
-    title: 'VIYOND — Smart Web Scooter Booking Engine (Bali)',
+    title: 'YOUR BRAND — Smart Web Scooter Booking Engine (Bali)',
     description:
       'Rent a scooter in Bali with instant online KYC verification, live fleet inventory sync, automatic zone delivery calculator, and free hotel delivery.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'VIYOND — Smart Web Scooter Booking Engine (Bali)',
+    title: 'YOUR BRAND — Smart Web Scooter Booking Engine (Bali)',
     description:
       'Rent a scooter in Bali with instant online KYC verification, live fleet inventory sync, automatic zone delivery calculator, and free hotel delivery.',
   },

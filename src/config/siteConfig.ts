@@ -30,9 +30,9 @@ export interface SiteConfig {
 }
 
 export const defaultSiteConfig: SiteConfig = {
-  brandName: 'VIYOND',
-  brandTagline: 'Vision & Beyond · Bali Smart Mobility',
-  logoUrl: '/assets/aistudio/design_UI_UX_V_35fb639f.svg',
+  brandName: 'YOUR BRAND',
+  brandTagline: 'Bali Smart Mobility',
+  logoUrl: '/your-brand-white.png',
   primaryColor: '#1b5fd4',
   secondaryColor: '#0a1d45',
   accentColor: '#2f7bff',

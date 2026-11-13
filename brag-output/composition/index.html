@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="id" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      /* LOOK: dark hero (#000) + green aurora (#34D399/#059669), light showroom (#E6E8EA), Plus Jakarta Sans, clean app-store cards. */
+      :root {
+        --ground: #000000;
+        --nav: #14171f;
+        --showroom: #e6e8ea;
+        --ink: #ffffff;
+        --ink-dark: #14171f;
+        --green: #34d399;
+        --green-deep: #059669;
+        --green-ink: #064e3b;
+        --font-display: "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: var(--ground); }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; font-family: var(--font-display); background: var(--ground); }
+      .scene { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; }
+      .dark { background: #000; color: var(--ink); }
+      .light { background: var(--showroom); color: var(--ink-dark); }
+
+      .aurora { position: absolute; border-radius: 50%; }
+      .a1 { left: 120px; top: 1000px; width: 1100px; height: 1100px; background: radial-gradient(circle, rgba(52,211,153,0.55) 0%, rgba(5,150,105,0.28) 40%, rgba(0,0,0,0) 70%); }
+      .a2 { left: -420px; top: -300px; width: 1000px; height: 1000px; background: radial-gradient(circle, rgba(134,239,172,0.30) 0%, rgba(5,150,105,0.18) 40%, rgba(0,0,0,0) 70%); }
+
+      .pill { position: absolute; left: 80px; top: 230px; padding: 18px 34px; border-radius: 999px; border: 2px solid rgba(255,255,255,0.28); background: rgba(255,255,255,0.10); font-size: 30px; font-weight: 600; color: #fff; letter-spacing: 0.01em; }
+      .hl { position: absolute; left: 80px; width: 920px; font-size: 92px; line-height: 1.08; font-weight: 800; letter-spacing: -0.03em; color: #fff; }
+      .hl em { font-style: normal; color: var(--green); }
+      .hero-img { position: absolute; left: 190px; top: 1180px; width: 700px; }
+
+      .cap { position: absolute; left: 80px; top: 110px; width: 920px; font-size: 76px; line-height: 1.08; font-weight: 800; letter-spacing: -0.03em; color: var(--ink-dark); }
+      .cap em { font-style: normal; color: var(--green-deep); }
+
+      .phone { position: absolute; left: 110px; top: 400px; width: 860px; height: 1400px; border-radius: 72px; background: #fff; border: 14px solid var(--nav); box-shadow: 0 40px 90px rgba(20,23,31,0.28); overflow: hidden; }
+      .ph-head { position: absolute; left: 40px; right: 40px; top: 36px; height: 80px; display: flex; align-items: center; justify-content: space-between; }
+      .brand { font-family: "JetBrains Mono", Menlo, monospace; font-size: 30px; font-weight: 700; letter-spacing: 0.08em; color: var(--ink-dark); }
+      .live { display: flex; align-items: center; gap: 12px; padding: 12px 26px; border-radius: 999px; background: #d1fae5; color: var(--green-ink); font-weight: 800; font-size: 28px; letter-spacing: 0.06em; }
+      .live i { width: 18px; height: 18px; border-radius: 50%; background: var(--green-deep); display: block; }
+      .ph-title { position: absolute; left: 40px; right: 40px; top: 36px; height: 80px; display: flex; align-items: center; font-size: 40px; font-weight: 800; color: var(--ink-dark); letter-spacing: -0.02em; }
+
+      .card { position: absolute; left: 40px; width: 756px; height: 270px; border-radius: 40px; background: #f3f4f6; border: 4px solid #e5e7eb; display: flex; align-items: center; }
+      .card img { width: 270px; height: 200px; object-fit: contain; margin-left: 24px; }
+      .card .nm { font-size: 58px; font-weight: 800; color: var(--ink-dark); letter-spacing: -0.02em; margin-left: 20px; }
+      .card .st { margin-top: 10px; margin-left: 20px; font-size: 28px; font-weight: 700; color: var(--green-ink); display: flex; align-items: center; gap: 10px; }
+      .card .st i { width: 16px; height: 16px; border-radius: 50%; background: var(--green-deep); display: block; }
+      .card .sel { position: absolute; right: 28px; top: 28px; padding: 10px 24px; border-radius: 999px; background: var(--green-deep); color: #fff; font-size: 28px; font-weight: 800; opacity: 0; }
+
+      .doc { position: absolute; left: 40px; width: 756px; height: 224px; border-radius: 36px; background: #f3f4f6; border: 4px solid #e5e7eb; overflow: hidden; }
+      .doc .n { position: absolute; left: 30px; top: 72px; width: 80px; height: 80px; border-radius: 50%; background: var(--nav); color: #fff; font-size: 38px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+      .doc .t { position: absolute; left: 134px; top: 34px; width: 500px; font-size: 36px; line-height: 1.15; font-weight: 800; color: var(--ink-dark); letter-spacing: -0.01em; }
+      .doc .s { position: absolute; left: 134px; top: 156px; font-size: 28px; font-weight: 700; color: #4b5563; }
+      .doc .s.ok { color: var(--green-ink); opacity: 0; }
+      .doc .ck { position: absolute; right: 30px; top: 72px; width: 80px; height: 80px; border-radius: 50%; background: var(--green-deep); color: #fff; font-size: 46px; font-weight: 800; display: flex; align-items: center; justify-content: center; opacity: 0; }
+      .doc .scan { position: absolute; left: 0; top: 0; width: 120px; height: 224px; background: linear-gradient(90deg, rgba(52,211,153,0), rgba(52,211,153,0.55)); border-right: 6px solid var(--green-deep); opacity: 0; }
+      .vbadge { position: absolute; left: 40px; width: 756px; top: 1140px; height: 116px; border-radius: 58px; background: var(--green-deep); color: #fff; font-size: 44px; font-weight: 800; display: flex; align-items: center; justify-content: center; opacity: 0; }
+
+      .pay { position: absolute; left: 40px; width: 756px; height: 300px; border-radius: 40px; background: #f3f4f6; border: 4px solid #e5e7eb; padding: 40px 40px; }
+      .pay .pt { font-size: 42px; font-weight: 800; color: var(--ink-dark); letter-spacing: -0.02em; line-height: 1.12; }
+      .pay .ps { margin-top: 16px; font-size: 30px; font-weight: 600; color: #4b5563; line-height: 1.3; }
+      .success { position: absolute; left: 0; top: 0; width: 832px; height: 1372px; background: #fff; opacity: 0; }
+      .success .big { position: absolute; left: 316px; top: 280px; width: 200px; height: 200px; border-radius: 50%; background: var(--green-deep); color: #fff; font-size: 120px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+      .success .h { position: absolute; left: 0; width: 832px; top: 540px; text-align: center; font-size: 68px; font-weight: 800; color: var(--ink-dark); letter-spacing: -0.03em; }
+      .success .p { position: absolute; left: 70px; width: 692px; top: 650px; text-align: center; font-size: 34px; font-weight: 600; color: #4b5563; line-height: 1.3; }
+      .toast { position: absolute; left: 40px; width: 752px; height: 170px; border-radius: 40px; background: var(--nav); color: #fff; display: flex; align-items: center; gap: 28px; padding: 0 36px; opacity: 0; box-shadow: 0 20px 50px rgba(20,23,31,0.35); }
+      .toast .ic { width: 96px; height: 96px; border-radius: 28px; flex: 0 0 96px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+      .toast .ic img { width: 96px; height: 96px; object-fit: cover; }
+      .toast .ic.tg { background: #229ed9; font-size: 54px; font-weight: 800; }
+      .toast .tx b { display: block; font-size: 34px; font-weight: 800; }
+      .toast .tx span { display: block; margin-top: 6px; font-size: 28px; font-weight: 600; color: #d1d5db; }
+
+      .cursor { position: absolute; left: 0; top: 0; width: 70px; height: 70px; opacity: 0; z-index: 20; }
+      .ring { position: absolute; left: 0; top: 0; width: 90px; height: 90px; border-radius: 50%; border: 6px solid var(--green-deep); opacity: 0; z-index: 19; }
+
+      .logo { position: absolute; left: 290px; top: 560px; width: 500px; height: 500px; }
+      .tag { position: absolute; left: 80px; width: 920px; top: 1130px; text-align: center; font-size: 46px; line-height: 1.25; font-weight: 700; color: #fff; }
+      .tag small { display: block; margin-top: 16px; font-size: 32px; font-weight: 600; color: var(--green); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="24.5" data-width="1080" data-height="1920">
+
+      <!-- SCENE 1: HOOK (0 - 4.1) -->
+      <div id="s1" class="scene dark clip" data-start="0" data-duration="4.1" data-track-index="1" style="z-index:1">
+        <div class="aurora a1" id="s1a1"></div>
+        <div class="aurora a2" id="s1a2"></div>
+        <div class="pill" id="s1pill">Smart Web Scooter Booking Engine · Bali Showroom</div>
+        <div class="hl" id="s1l1" style="top:420px">Sewa Motor di Bali —</div>
+        <div class="hl" id="s1l2" style="top:640px"><em>Verifikasi Online Instan</em></div>
+        <div class="hl" id="s1l3" style="top:860px">&amp; Gratis Antar ke Hotel.</div>
+        <img class="hero-img" id="s1img" src="assets/img/PCX.png" alt="" />
+      </div>
+
+      <!-- SCENE 2: ARMADA LIVE (3.70 - 8.84) -->
+      <div id="s2" class="scene light clip" data-start="3.7" data-duration="5.14" data-track-index="2" style="z-index:2">
+        <div class="cap" id="s2cap">Pilih unit <em>armada live</em></div>
+        <div class="phone" id="s2ph">
+          <div class="ph-head"><div class="brand">VIYOND</div><div class="live"><i></i>LIVE</div></div>
+          <div class="card" id="c1" style="top:140px"><img src="assets/img/PCX.png" alt="" /><div><div class="nm">PCX</div><div class="st"><i></i>Tersedia</div></div><div class="sel">Dipilih ✓</div></div>
+          <div class="card" id="c2" style="top:436px"><img src="assets/img/Vario.png" alt="" /><div><div class="nm">Vario</div><div class="st"><i></i>Tersedia</div></div><div class="sel" id="c2sel">Dipilih ✓</div></div>
+          <div class="card" id="c3" style="top:732px"><img src="assets/img/Fazzio.png" alt="" /><div><div class="nm">Fazzio</div><div class="st"><i></i>Tersedia</div></div><div class="sel">Dipilih ✓</div></div>
+          <div class="card" id="c4" style="top:1028px"><img src="assets/img/Scoopy.png" alt="" /><div><div class="nm">Scoopy</div><div class="st"><i></i>Tersedia</div></div><div class="sel">Dipilih ✓</div></div>
+        </div>
+        <div class="ring" id="s2ring"></div>
+        <svg class="cursor" id="s2cur" viewBox="0 0 24 24"><path d="M3 2 L3 19 L8 14.5 L11.5 22 L14.5 20.7 L11 13.3 L18 13 Z" fill="#14171f" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </div>
+
+      <!-- SCENE 3: VERIFIKASI KYC (8.44 - 13.58) -->
+      <div id="s3" class="scene light clip" data-start="8.44" data-duration="5.14" data-track-index="3" style="z-index:3">
+        <div class="cap" id="s3cap">Verifikasi <em>AI</em> dalam hitungan menit</div>
+        <div class="phone" id="s3ph">
+          <div class="ph-title">Dokumen KYC</div>
+          <div class="doc" id="d1" style="top:136px"><div class="scan"></div><div class="n">1</div><div class="t">Paspor / KTP Asli</div><div class="s">Menunggu</div><div class="s ok">Terverifikasi</div><div class="ck">✓</div></div>
+          <div class="doc" id="d2" style="top:380px"><div class="scan"></div><div class="n">2</div><div class="t">Foto Selfie Memegang Paspor/KTP</div><div class="s">Menunggu</div><div class="s ok">Terverifikasi</div><div class="ck">✓</div></div>
+          <div class="doc" id="d3" style="top:624px"><div class="scan"></div><div class="n">3</div><div class="t">Screenshot Tiket Pesawat Pulang</div><div class="s">Menunggu</div><div class="s ok">Terverifikasi</div><div class="ck">✓</div></div>
+          <div class="doc" id="d4" style="top:868px"><div class="scan"></div><div class="n">4</div><div class="t">Bukti Booking Hotel / Vila</div><div class="s">Menunggu</div><div class="s ok">Terverifikasi</div><div class="ck">✓</div></div>
+          <div class="vbadge" id="vb">✓ Terverifikasi AI</div>
+        </div>
+      </div>
+
+      <!-- SCENE 4: BAYAR & TERKIRIM (13.18 - 18.31) -->
+      <div id="s4" class="scene light clip" data-start="13.18" data-duration="5.13" data-track-index="4" style="z-index:4">
+        <div class="cap" id="s4cap">Pilih pembayaran, <em>selesai.</em></div>
+        <div class="phone" id="s4ph">
+          <div class="ph-title">Pilih Metode Pembayaran</div>
+          <div class="pay" id="p1" style="top:140px"><div class="pt">Pembayaran Online Instan</div><div class="ps">Visa / Mastercard / QRIS / Virtual Account</div></div>
+          <div class="pay" id="p2" style="top:480px"><div class="pt">Transfer Bank Manual (Bank Lokal)</div><div class="ps">BCA / Mandiri / BNI — Unggah bukti transfer</div></div>
+          <div class="pay" id="p3" style="top:820px"><div class="pt">Cash on Delivery (Bayar Saat Tiba)</div><div class="ps">Bayar tunai ke kurir saat motor tiba di hotel.</div></div>
+          <div class="success" id="succ">
+            <div class="big">✓</div>
+            <div class="h">Pesanan Diterima!</div>
+            <div class="p">Buka Pelacakan Live WhatsApp</div>
+          </div>
+          <div class="toast" id="t1" style="top:1000px"><div class="ic"><img src="assets/img/whatsapp-logo.png" alt="" /></div><div class="tx"><b>WhatsApp</b><span>Pelacakan live pesanan Anda</span></div></div>
+          <div class="toast" id="t2" style="top:1180px"><div class="ic tg">➤</div><div class="tx"><b>Telegram</b><span>Notifikasi booking untuk Owner</span></div></div>
+        </div>
+        <div class="ring" id="s4ring"></div>
+        <svg class="cursor" id="s4cur" viewBox="0 0 24 24"><path d="M3 2 L3 19 L8 14.5 L11.5 22 L14.5 20.7 L11 13.3 L18 13 Z" fill="#14171f" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </div>
+
+      <!-- SCENE 5: PUNCHLINE (17.91 - 24.5) -->
+      <div id="s5" class="scene dark clip" data-start="17.91" data-duration="6.59" data-track-index="5" style="z-index:5">
+        <div class="aurora a1" id="s5a1"></div>
+        <div class="aurora a2" id="s5a2"></div>
+        <div class="hl" id="s5l1" style="top:640px; font-size:100px">Tanpa tahan paspor fisik.</div>
+        <div class="hl" id="s5l2" style="top:1010px; font-size:76px; font-weight:700; color:#d1fae5">Motor diantar ke lobi hotel Anda.</div>
+        <img class="logo" id="s5logo" src="assets/img/viyond-logo.png" alt="VIYOND" />
+        <div class="tag" id="s5tag">Smart Web Scooter Booking Engine · Bali<small>Verifikasi Online Instan &amp; Gratis Antar ke Hotel</small></div>
+      </div>
+
+      <!-- AUDIO -->
+      <audio id="bg-music" data-start="0" data-duration="24.5" data-track-index="10" data-volume="0.3" data-fade-in="0.6" data-fade-out="1.5" src="assets/music/happy-beats-business-moves-vol-11-by-ende-dot-app.mp3"></audio>
+      <audio id="sx1" data-start="0.3" data-duration="1" data-track-index="11" data-volume="0.6" src="assets/sfx/drop_001.ogg"></audio>
+      <audio id="sx2" data-start="1.5" data-duration="1" data-track-index="12" data-volume="0.6" src="assets/sfx/drop_002.ogg"></audio>
+      <audio id="sx3" data-start="3.62" data-duration="1" data-track-index="13" data-volume="0.7" src="assets/sfx/impactSoft_medium_001.ogg"></audio>
+      <audio id="sx4" data-start="4.23" data-duration="1" data-track-index="14" data-volume="0.55" src="assets/sfx/drop_001.ogg"></audio>
+      <audio id="sx5" data-start="5.28" data-duration="1" data-track-index="15" data-volume="0.55" src="assets/sfx/drop_002.ogg"></audio>
+      <audio id="sx6" data-start="7.38" data-duration="1" data-track-index="16" data-volume="0.7" src="assets/sfx/click_003.ogg"></audio>
+      <audio id="sx7" data-start="9.5" data-duration="1" data-track-index="17" data-volume="0.65" src="assets/sfx/click_003.ogg"></audio>
+      <audio id="sx8" data-start="10.54" data-duration="1" data-track-index="18" data-volume="0.65" src="assets/sfx/click_003.ogg"></audio>
+      <audio id="sx9" data-start="11.6" data-duration="1" data-track-index="19" data-volume="0.65" src="assets/sfx/click_003.ogg"></audio>
+      <audio id="sx10" data-start="12.6" data-duration="1.5" data-track-index="20" data-volume="0.6" src="assets/sfx/impactBell_heavy_000.ogg"></audio>
+      <audio id="sx11" data-start="15.28" data-duration="1" data-track-index="21" data-volume="0.7" src="assets/sfx/click_003.ogg"></audio>
+      <audio id="sx12" data-start="15.78" data-duration="1" data-track-index="22" data-volume="0.6" src="assets/sfx/impactSoft_medium_002.ogg"></audio>
+      <audio id="sx13" data-start="16.34" data-duration="1" data-track-index="23" data-volume="0.6" src="assets/sfx/drop_002.ogg"></audio>
+      <audio id="sx14" data-start="16.86" data-duration="1" data-track-index="24" data-volume="0.6" src="assets/sfx/drop_001.ogg"></audio>
+      <audio id="sx15" data-start="17.85" data-duration="1" data-track-index="25" data-volume="0.7" src="assets/sfx/impactSoft_medium_001.ogg"></audio>
+      <audio id="sx16" data-start="20.5" data-duration="1" data-track-index="26" data-volume="0.7" src="assets/sfx/impactSoft_medium_004.ogg"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const E = "power3.out";
+      const rise = (sel, t, y = 50, d = 0.45) =>
+        tl.fromTo(sel, { opacity: 0, y: y }, { opacity: 1, y: 0, duration: d, ease: E }, t);
+      const slideIn = (sel, t) =>
+        tl.fromTo(sel, { x: 1080 }, { x: 0, duration: 0.45, ease: "power3.out" }, t);
+
+      /* SCENE 1: hook (0 - 4.1) */
+      tl.fromTo("#s1a1", { scale: 0.9 }, { scale: 1.15, duration: 4.1, ease: "none" }, 0);
+      tl.fromTo("#s1a2", { x: 0 }, { x: 120, duration: 4.1, ease: "none" }, 0);
+      tl.set("#s1pill", { opacity: 1, y: 0 }, 0);
+      tl.set("#s1l1", { opacity: 1, y: 0 }, 0);
+      rise("#s1l2", 0.7, 60);
+      rise("#s1l3", 1.3, 60);
+      rise("#s1img", 1.7, 140, 0.7);
+
+      /* SCENE 2: armada live (3.70 - 8.84) */
+      // beat-locked: 3.70s (strong cue, scene cut)
+      slideIn("#s2", 3.7);
+      rise("#s2cap", 4.0, 40);
+      tl.fromTo("#s2ph", { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: E }, 4.0);
+      // beat-grid: card 1 at 4.23s, card 2 at 4.75s, card 3 at 5.28s, card 4 at 5.80s
+      rise("#c1", 4.23, 70, 0.4);
+      rise("#c2", 4.75, 70, 0.4);
+      rise("#c3", 5.28, 70, 0.4);
+      rise("#c4", 5.8, 70, 0.4);
+      // simulated tap on Vario (#c2 center: x=540, y=985) at 7.38s
+      tl.fromTo("#s2cur", { opacity: 0, x: 760, y: 1500 }, { opacity: 1, x: 760, y: 1500, duration: 0.01 }, 6.3);
+      tl.to("#s2cur", { x: 540, y: 985, duration: 1.0, ease: "power2.inOut" }, 6.35);
+      tl.fromTo("#s2ring", { opacity: 0, scale: 0.4, x: 503, y: 946 }, { opacity: 1, scale: 1.3, x: 503, y: 946, duration: 0.01 }, 7.38);
+      tl.to("#s2ring", { opacity: 0, scale: 2, duration: 0.45, ease: "power2.out" }, 7.4);
+      tl.to("#c2", { borderColor: "#059669", backgroundColor: "#ecfdf5", duration: 0.25 }, 7.38);
+      tl.to("#c2sel", { opacity: 1, duration: 0.25 }, 7.4);
+      tl.to("#s2cur", { opacity: 0, duration: 0.3 }, 8.0);
+
+      /* SCENE 3: KYC (8.44 - 13.58) */
+      slideIn("#s3", 8.44);
+      rise("#s3cap", 8.75, 40);
+      tl.fromTo("#s3ph", { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: E }, 8.75);
+      rise("#d1", 9.0, 60, 0.35);
+      rise("#d2", 9.12, 60, 0.35);
+      rise("#d3", 9.24, 60, 0.35);
+      rise("#d4", 9.36, 60, 0.35);
+      // beat-grid (every other beat): checks at 9.50, 10.54, 11.60, 12.65
+      const checks = [["d1", 9.5], ["d2", 10.54], ["d3", 11.6], ["d4", 12.65]];
+      checks.forEach(([id, t]) => {
+        tl.fromTo("#" + id + " .scan", { opacity: 1, x: -130 }, { opacity: 1, x: 760, duration: 0.5, ease: "power1.inOut" }, t - 0.5);
+        tl.to("#" + id + " .scan", { opacity: 0, duration: 0.1 }, t);
+        tl.fromTo("#" + id + " .ck", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, t);
+        tl.to("#" + id + " .s:not(.ok)", { opacity: 0, duration: 0.15 }, t);
+        tl.to("#" + id + " .s.ok", { opacity: 1, duration: 0.2 }, t);
+        tl.to("#" + id, { borderColor: "#059669", duration: 0.2 }, t);
+      });
+      // beat-locked: 12.65s (strong cue), badge lands
+      tl.fromTo("#vb", { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.6)" }, 12.65);
+
+      /* SCENE 4: payment + dispatch (13.18 - 18.31) */
+      slideIn("#s4", 13.18);
+      rise("#s4cap", 13.5, 40);
+      tl.fromTo("#s4ph", { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: E }, 13.5);
+      rise("#p1", 13.8, 60, 0.35);
+      rise("#p2", 14.0, 60, 0.35);
+      rise("#p3", 14.2, 60, 0.35);
+      // simulated tap on option 1 at 15.28s
+      tl.fromTo("#s4cur", { opacity: 0, x: 800, y: 1500 }, { opacity: 1, x: 800, y: 1500, duration: 0.01 }, 14.4);
+      tl.to("#s4cur", { x: 560, y: 640, duration: 0.85, ease: "power2.inOut" }, 14.45);
+      tl.fromTo("#s4ring", { opacity: 0, scale: 0.4, x: 523, y: 601 }, { opacity: 1, scale: 1.3, x: 523, y: 601, duration: 0.01 }, 15.28);
+      tl.to("#s4ring", { opacity: 0, scale: 2, duration: 0.45, ease: "power2.out" }, 15.3);
+      tl.to("#p1", { borderColor: "#059669", backgroundColor: "#ecfdf5", duration: 0.25 }, 15.28);
+      tl.to("#s4cur", { opacity: 0, duration: 0.25 }, 15.6);
+      tl.to(["#p1", "#p2", "#p3", "#s4 .ph-title"], { opacity: 0, visibility: "hidden", duration: 0.2 }, 15.65);
+      tl.fromTo("#succ", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 15.81);
+      tl.fromTo("#succ .big", { scale: 0.5 }, { scale: 1, duration: 0.5, ease: "back.out(1.8)" }, 15.81);
+      // beat-grid: WhatsApp 16.34s, Telegram 16.86s
+      tl.fromTo("#t1", { opacity: 0, y: -80 }, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.4)" }, 16.34);
+      tl.fromTo("#t2", { opacity: 0, y: -80 }, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.4)" }, 16.86);
+
+      /* SCENE 5: punchline (17.91 - 24.5) */
+      // beat-locked: 17.91s (strong cue)
+      tl.fromTo("#s5", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, 17.91);
+      tl.fromTo("#s5a1", { scale: 0.9 }, { scale: 1.2, duration: 6.59, ease: "none" }, 17.91);
+      tl.fromTo("#s5a2", { x: 0 }, { x: 140, duration: 6.59, ease: "none" }, 17.91);
+      rise("#s5l1", 18.2, 60);
+      rise("#s5l2", 18.8, 60);
+      tl.to("#s5l1", { opacity: 0, y: -80, duration: 0.35, ease: "power2.in" }, 20.0);
+      tl.to("#s5l2", { opacity: 0, y: -80, duration: 0.35, ease: "power2.in" }, 20.0);
+      tl.fromTo("#s5logo", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.55, ease: "back.out(1.5)" }, 20.19);
+      rise("#s5tag", 20.4, 40, 0.45);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
